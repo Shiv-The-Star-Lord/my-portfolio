@@ -1,0 +1,2321 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Power Grid Data Engineering | Technical Case Study</title>
+
+<meta name="description" content="Detailed technical case study of an automated power grid data pipeline using Python, Pandas, PySpark, Microsoft Fabric, Delta Lake, Dataflow Gen2 and Power BI.">
+
+<style>
+/* =====================================================
+   GLOBAL DESIGN
+===================================================== */
+
+:root {
+    --bg: #080f1c;
+    --surface: #101c2e;
+    --surface-light: #16243a;
+    --border: rgba(148,163,184,.19);
+    --text: #e8eef7;
+    --muted: #a8b5c8;
+    --cyan: #38bdf8;
+    --blue: #60a5fa;
+    --green: #4ade80;
+    --orange: #fbbf24;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 90px;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, -apple-system, BlinkMacSystemFont,
+                 "Segoe UI", sans-serif;
+    line-height: 1.7;
+}
+
+a {
+    color: inherit;
+}
+
+.container {
+    width: min(1150px, 91%);
+    margin: auto;
+}
+
+section {
+    scroll-margin-top: 90px;
+}
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 17px 5%;
+    background: rgba(8,15,28,.94);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(15px);
+}
+
+.navbar a {
+    color: var(--cyan);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.navbar span {
+    color: var(--muted);
+    font-size: .76rem;
+    letter-spacing: 2px;
+}
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.hero {
+    padding: 105px 0 80px;
+    background:
+        radial-gradient(circle at 80% 20%,
+        rgba(14,165,233,.18), transparent 35%),
+        linear-gradient(135deg,#14243b,#080f1c 75%);
+    border-bottom: 1px solid var(--border);
+}
+
+.eyebrow {
+    color: var(--cyan);
+    font-size: .78rem;
+    letter-spacing: 3px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.hero h1 {
+    max-width: 900px;
+    margin: 23px 0;
+    font-size: clamp(2.5rem,6vw,4.8rem);
+    line-height: 1.1;
+    letter-spacing: -2px;
+}
+
+.hero h1 span {
+    color: var(--cyan);
+}
+
+.hero-description {
+    max-width: 800px;
+    color: var(--muted);
+    font-size: 1.1rem;
+    line-height: 1.9;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+.tags span {
+    padding: 8px 14px;
+    background: rgba(56,189,248,.09);
+    border: 1px solid rgba(56,189,248,.25);
+    border-radius: 7px;
+    color: #7dd3fc;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* =====================================================
+   QUICK PROJECT FACTS
+===================================================== */
+
+.facts {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 15px;
+    margin: 35px auto 0;
+}
+
+.fact {
+    padding: 22px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.fact strong {
+    display: block;
+    color: var(--cyan);
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.fact small {
+    color: var(--muted);
+}
+
+/* =====================================================
+   SECTION COMMON STYLES
+===================================================== */
+
+.content-section {
+    padding: 85px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.section-label {
+    color: var(--cyan);
+    font-size: .76rem;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+}
+
+.content-section h2 {
+    margin: 12px 0 18px;
+    font-size: clamp(1.9rem,4vw,2.7rem);
+    line-height: 1.2;
+}
+
+.section-intro {
+    max-width: 850px;
+    color: var(--muted);
+    margin-bottom: 35px;
+    line-height: 1.9;
+}
+
+h3 {
+    line-height: 1.35;
+}
+
+p {
+    line-height: 1.85;
+}
+
+/* =====================================================
+   CARDS AND GRIDS
+===================================================== */
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 20px;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 18px;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 26px;
+    border-radius: 13px;
+    transition: .25s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--cyan);
+}
+
+.card h3 {
+    margin-bottom: 12px;
+    font-size: 1.15rem;
+}
+
+.card p,
+.card li {
+    color: var(--muted);
+}
+
+.card ul {
+    padding-left: 20px;
+    margin-top: 12px;
+}
+
+.card li {
+    margin-bottom: 7px;
+}
+
+/* =====================================================
+   ARCHITECTURE FLOW
+===================================================== */
+
+.architecture {
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    gap: 12px;
+}
+
+.arch-step {
+    padding: 23px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    position: relative;
+}
+
+.arch-step small {
+    color: var(--cyan);
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.arch-step h3 {
+    font-size: 1rem;
+    margin: 13px 0;
+}
+
+.arch-step p {
+    color: var(--muted);
+    font-size: .86rem;
+}
+
+.arch-step .arrow {
+    color: var(--cyan);
+    font-size: 1.5rem;
+    margin-top: 14px;
+}
+
+/* =====================================================
+   PROCESS FLOW
+===================================================== */
+
+.process-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    margin: 25px 0;
+}
+
+.process-box {
+    flex: 1;
+    min-width: 0;
+    padding: 18px 12px;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.process-box strong {
+    display: block;
+    color: var(--cyan);
+    font-size: .95rem;
+}
+
+.process-box span {
+    display: block;
+    color: var(--muted);
+    font-size: .78rem;
+    margin-top: 6px;
+}
+
+.process-arrow {
+    align-self: center;
+    color: var(--cyan);
+    font-size: 1.4rem;
+}
+
+/* =====================================================
+   CODE BLOCKS
+===================================================== */
+
+.code-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 18px;
+    background: #1c2b40;
+    border: 1px solid var(--border);
+    border-bottom: 0;
+    border-radius: 10px 10px 0 0;
+}
+
+.code-heading span:first-child {
+    font-size: .85rem;
+    font-weight: 700;
+}
+
+.code-heading span:last-child {
+    color: var(--green);
+    font-size: .72rem;
+    letter-spacing: 1px;
+}
+
+pre {
+    padding: 23px;
+    overflow-x: auto;
+    background: #070d17;
+    border: 1px solid var(--border);
+    border-radius: 0 0 10px 10px;
+    color: #d7e4f4;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: .81rem;
+    line-height: 1.8;
+    white-space: pre;
+    tab-size: 4;
+}
+
+pre code {
+    font-family: inherit;
+}
+
+.code-explanation {
+    margin-top: 18px;
+    padding: 22px;
+    background: rgba(56,189,248,.055);
+    border-left: 3px solid var(--cyan);
+    border-radius: 0 9px 9px 0;
+}
+
+.code-explanation h4 {
+    color: var(--cyan);
+    margin-bottom: 9px;
+}
+
+.code-explanation p,
+.code-explanation li {
+    color: var(--muted);
+}
+
+.code-explanation ul {
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+/* =====================================================
+   SCREENSHOT GALLERY
+===================================================== */
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 23px;
+}
+
+.gallery figure {
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    transition: .25s ease;
+}
+
+.gallery figure:first-child {
+    grid-column: 1 / -1;
+}
+
+.gallery figure:hover {
+    transform: translateY(-5px);
+    border-color: var(--cyan);
+}
+
+.gallery a {
+    display: block;
+    background: #e8f0e8;
+}
+
+.gallery img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.gallery figcaption {
+    padding: 20px;
+}
+
+.gallery figcaption h3 {
+    margin-bottom: 7px;
+}
+
+.gallery figcaption p {
+    color: var(--muted);
+    font-size: .9rem;
+}
+
+/* =====================================================
+   CALLOUTS
+===================================================== */
+
+.note {
+    margin: 22px 0;
+    padding: 21px 23px;
+    border-radius: 10px;
+    background: rgba(251,191,36,.07);
+    border: 1px solid rgba(251,191,36,.24);
+}
+
+.note strong {
+    color: var(--orange);
+}
+
+.note p {
+    color: var(--muted);
+    margin-top: 7px;
+}
+
+.success-note {
+    background: rgba(74,222,128,.06);
+    border: 1px solid rgba(74,222,128,.2);
+}
+
+.success-note strong {
+    color: var(--green);
+}
+
+/* =====================================================
+   TABLES
+===================================================== */
+
+.table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+th,td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    color: var(--cyan);
+    background: var(--surface-light);
+}
+
+td {
+    color: var(--muted);
+}
+
+tr:last-child td {
+    border-bottom: 0;
+}
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.footer {
+    padding: 45px 20px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.footer a {
+    display: inline-block;
+    margin-top: 12px;
+    color: var(--cyan);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:900px) {
+    .architecture {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    .facts {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    .grid-3 {
+        grid-template-columns: repeat(2,1fr);
+    }
+}
+
+@media(max-width:650px) {
+    .hero {
+        padding: 70px 0;
+    }
+
+    .content-section {
+        padding: 60px 0;
+    }
+
+    .grid-2,
+    .grid-3,
+    .gallery {
+        grid-template-columns: 1fr;
+    }
+
+    .gallery figure:first-child {
+        grid-column: auto;
+    }
+
+    .architecture {
+        grid-template-columns: 1fr;
+    }
+
+    .process-flow {
+        flex-direction: column;
+    }
+
+    .process-arrow {
+        transform: rotate(90deg);
+    }
+
+    .navbar span {
+        display: none;
+    }
+}
+
+@media(prefers-reduced-motion:reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+        transition-duration: .01ms !important;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     NAVIGATION
+===================================================== -->
+
+<nav class="navbar">
+    <a href="index.html#projects">← Back to Portfolio</a>
+    <span>TECHNICAL PROJECT CASE STUDY</span>
+</nav>
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<header class="hero">
+    <div class="container">
+
+        <p class="eyebrow">DATA ENGINEERING • MICROSOFT FABRIC</p>
+
+        <h1>
+            Automated Power Grid
+            <span>Data Engineering Pipeline</span>
+        </h1>
+
+        <p class="hero-description">
+            An end-to-end data engineering implementation that
+            transforms daily power grid Excel source files into
+            structured Lakehouse datasets, manages historical
+            records using Delta Lake, integrates forecast and
+            actual demand data, and delivers analytical insights
+            through Power BI.
+        </p>
+
+        <div class="tags">
+            <span>Python</span>
+            <span>Requests</span>
+            <span>Pandas</span>
+            <span>PySpark</span>
+            <span>SQL</span>
+            <span>Microsoft Fabric</span>
+            <span>Delta Lake</span>
+            <span>Dataflow Gen2</span>
+            <span>Power BI</span>
+            <span>Power Automate</span>
+        </div>
+
+        <div class="facts">
+
+            <div class="fact">
+                <strong>04</strong>
+                <small>Engineering Notebooks</small>
+            </div>
+
+            <div class="fact">
+                <strong>03</strong>
+                <small>Dashboard Screenshots</small>
+            </div>
+
+            <div class="fact">
+                <strong>Delta</strong>
+                <small>Lakehouse Storage</small>
+            </div>
+
+            <div class="fact">
+                <strong>End-to-End</strong>
+                <small>Data Processing Workflow</small>
+            </div>
+
+        </div>
+
+    </div>
+</header>
+
+
+<main>
+
+<!-- =====================================================
+     01 BUSINESS PROBLEM
+===================================================== -->
+
+<section class="content-section">
+<div class="container">
+
+    <p class="section-label">01 • BUSINESS CONTEXT</p>
+    <h2>Project Overview & Data Challenge</h2>
+
+    <p class="section-intro">
+        Daily power grid analysis requires reliable information
+        about peak demand and power consumption. The source
+        information arrives in Excel files, while analytical
+        reporting requires structured, consistent and
+        historical datasets.
+    </p>
+
+    <div class="grid-2">
+
+        <article class="card">
+            <h3>The Challenge</h3>
+
+            <p>
+                Source files needed to be discovered, downloaded,
+                converted and prepared before they could be
+                used for analytical processing. Historical
+                records also needed to be maintained as new
+                daily data became available.
+            </p>
+        </article>
+
+        <article class="card">
+            <h3>The Engineering Solution</h3>
+
+            <p>
+                A multi-stage solution using Python, Pandas,
+                PySpark, Delta Lake, Dataflow Gen2 and Power BI
+                was implemented to automate data preparation,
+                historical consolidation and reporting.
+            </p>
+        </article>
+
+    </div>
+
+</div>
+</section>
+
+
+<!-- =====================================================
+     02 ARCHITECTURE
+===================================================== -->
+
+<section class="content-section">
+<div class="container">
+
+    <p class="section-label">02 • SOLUTION ARCHITECTURE</p>
+    <h2>End-to-End Data Flow</h2>
+
+    <p class="section-intro">
+        The solution separates source ingestion, transformation,
+        historical data management, analytical modeling and
+        reporting into distinct processing stages.
+    </p>
+
+    <div class="architecture">
+
+        <article class="arch-step">
+            <small>STAGE 01</small>
+            <h3>Source Files</h3>
+            <p>
+                Daily Excel workbooks retrieved from the
+                source publishing location.
+            </p>
+            <div class="arrow">↓</div>
+        </article>
+
+        <article class="arch-step">
+            <small>STAGE 02</small>
+            <h3>Python Ingestion</h3>
+            <p>
+                Requests downloads XLS files and Pandas
+                converts them into CSV.
+            </p>
+            <div class="arrow">↓</div>
+        </article>
+
+        <article class="arch-step">
+            <small>STAGE 03</small>
+            <h3>PySpark Staging</h3>
+            <p>
+                Cleansing, filtering, type conversion,
+                metadata extraction and calculations.
+            </p>
+            <div class="arrow">↓</div>
+        </article>
+
+        <article class="arch-step">
+            <small>STAGE 04</small>
+            <h3>Delta Lake</h3>
+            <p>
+                Historical MERGE operations and
+                partitioned table storage.
+            </p>
+            <div class="arrow">↓</div>
+        </article>
+
+        <article class="arch-step">
+            <small>STAGE 05</small>
+            <h3>Power BI</h3>
+            <p>
+                Semantic modeling, demand analysis
+                and reporting.
+            </p>
+            <div class="arrow">↗</div>
+        </article>
+
+    </div>
+
+    <div class="note">
+        <strong>Additional data integration and automation</strong>
+        <p>
+            Dataflow Gen2 handles historical data loading and
+            forecast-versus-actual updates from an online Excel
+            workbook. Power Automate supports on-demand refresh
+            and scheduled monthly email communication.
+        </p>
+    </div>
+
+</div>
+</section>
+
+
+<!-- =====================================================
+     03 XLS TO CSV - MOST IMPORTANT PART
+===================================================== -->
+
+<section class="content-section" id="xls-to-csv">
+<div class="container">
+
+    <p class="section-label">03 • NOTEBOOK 01 • DATA INGESTION</p>
+    <h2>How Excel (.xls) Files Are Converted into CSV</h2>
+
+    <p class="section-intro">
+        This is the first and one of the most important
+        engineering stages of the project. The source data
+        is available as dated Excel files. Instead of
+        manually downloading and converting them, the
+        notebook automates the entire process.
+    </p>
+
+    <h3>Step 1 — Prepare Python Libraries</h3>
+
+    <p class="section-intro">
+        The notebook imports the libraries required for
+        HTTP requests, Excel processing, date calculations,
+        file management and error handling.
+    </p>
+
+    <div class="code-heading">
+        <span>Notebook 1 — Imports</span>
+        <span>PYTHON</span>
+    </div>
+
+<pre><code>import requests
+import pandas as pd
+from datetime import datetime, timedelta
+import os
+import time
+import urllib3
+from requests.exceptions import RequestException</code></pre>
+
+    <div class="code-explanation">
+        <h4>What each library does</h4>
+
+        <ul>
+            <li><strong>requests:</strong> Sends HTTP requests to retrieve Excel files.</li>
+            <li><strong>pandas:</strong> Reads Excel workbooks and converts data into CSV.</li>
+            <li><strong>datetime:</strong> Calculates dates and formats filenames.</li>
+            <li><strong>os:</strong> Creates directories, checks files and removes temporary files.</li>
+            <li><strong>time:</strong> Adds short delays between download attempts.</li>
+            <li><strong>urllib3:</strong> Handles the SSL warning configuration used in the notebook.</li>
+        </ul>
+    </div>
+
+
+    <h3 style="margin-top:45px;">Step 2 — Configure HTTP Request Headers</h3>
+
+    <p class="section-intro">
+        A reusable HTTP session is configured with request
+        headers. The notebook uses these headers when
+        attempting to retrieve the source Excel file.
+    </p>
+
+    <div class="code-heading">
+        <span>Notebook 1 — Request Configuration</span>
+        <span>PYTHON</span>
+    </div>
+
+<pre><code>urllib3.disable_warnings(
+    urllib3.exceptions.InsecureRequestWarning
+)
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+    "Accept": "application/vnd.ms-excel,application/octet-stream,*/*",
+    "Connection": "keep-alive"
+}
+
+session = requests.Session()
+session.headers.update(HEADERS)</code></pre>
+
+    <div class="code-explanation">
+        <h4>Why use a Session?</h4>
+        <p>
+            A Requests Session allows the notebook to reuse
+            configured headers across multiple HTTP requests.
+            This is useful because the notebook checks multiple
+            possible source file identifiers for each date.
+        </p>
+    </div>
+
+    <div class="note">
+        <strong>Security consideration</strong>
+        <p>
+            The original implementation uses
+            <code>verify=False</code> and suppresses SSL
+            warnings. This disables certificate verification
+            for those requests. It is a security trade-off,
+            not a recommended default for a production
+            implementation. A public portfolio should describe
+            the actual behavior honestly.
+        </p>
+    </div>
+
+
+    <h3 style="margin-top:45px;">Step 3 — Create Lakehouse File Directories</h3>
+
+    <p class="section-intro">
+        Two directories are prepared inside the Fabric
+        Lakehouse Files area. One stores downloaded Excel
+        files temporarily; the other stores converted CSV
+        files.
+    </p>
+
+    <div class="code-heading">
+        <span>Notebook 1 — File Paths</span>
+        <span>PYTHON</span>
+    </div>
+
+<pre><code>xls_dir = "/lakehouse/default/Files/xls"
+csv_dir = "/lakehouse/default/Files/csv"
+
+os.makedirs(xls_dir, exist_ok=True)
+os.makedirs(csv_dir, exist_ok=True)
+
+today = datetime.today()</code></pre>
+
+    <div class="code-explanation">
+        <h4>Directory responsibilities</h4>
+        <ul>
+            <li><strong>Files/xls:</strong> Temporary location for the downloaded Excel workbook.</li>
+            <li><strong>Files/csv:</strong> Destination for converted CSV files used by subsequent processing.</li>
+            <li><strong>exist_ok=True:</strong> Prevents an error when the directories already exist.</li>
+        </ul>
+    </div>
+
+
+    <h3 style="margin-top:45px;">Step 4 — Implement CSV Retention</h3>
+
+    <p class="section-intro">
+        The notebook checks the CSV directory and removes
+        dated CSV files older than three days. This controls
+        the amount of recent converted source data retained
+        in the working directory.
+    </p>
+
+    <div class="code-heading">
+        <span>Notebook 1 — Retention Logic</span>
+        <span>PYTHON</span>
+    </div>
+
+<pre><code>for file in os.listdir(csv_dir):
+    if not file.endswith(".csv"):
+        continue
+
+    try:
+        file_date = datetime.strptime(
+            file.replace(".csv", ""),
+            "%d.%m.%y"
+        )
+
+        if (today - file_date).days > 3:
+            os.remove(os.path.join(csv_dir, file))
+            print(f"Deleted old CSV: {file}")
+
+    except ValueError:
+        pass</code></pre>
+
+    <div class="code-explanation">
+        <h4>How this works</h4>
+        <ol>
+            <li>Lists files present in the CSV directory.</li>
+            <li>Ignores files that do not have the CSV extension.</li>
+            <li>Extracts the date from filenames such as <code>25.10.26.csv</code>.</li>
+            <li>Compares the file date with the current date.</li>
+            <li>Deletes files whose age is greater than three days.</li>
+        </ol>
+    </div>
+
+
+    <h3 style="margin-top:45px;">Step 5 — Build the Date-Based Download Function</h3>
+
+    <p class="section-intro">
+        The core function is <code>process_date()</code>.
+        It receives a target date, constructs the expected
+        file name, checks whether a converted CSV already
+        exists, and searches for the matching Excel source.
+    </p>
+
+    <div class="code-heading">
+        <span>Notebook 1 — Date and Filename Preparation</span>
+        <span>PYTHON</span>
+    </div>
+
+<pre><code>def process_date(target_date):
+
+    date_part = target_date.strftime("%d.%m.%y")
+    year = target_date.strftime("%Y")
+    month = target_date.strftime("%m")
+
+    xls_path = f"{xls_dir}/{date_part}.xls"
+    csv_path = f"{csv_dir}/{date_part}.csv"
+
+    if os.path.exists(csv_path):
+        print(f"CSV already exists for {date_part}, skipping")
+        return True</code></pre>
+
+    <div class="code-explanation">
+        <h4>Example of date formatting</h4>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Example</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>target_date</td>
+                        <td>25 October 2026</td>
+                        <td>Input date</td>
+                    </tr>
+                    <tr>
+                        <td>date_part</td>
+                        <td>25.10.26</td>
+                        <td>Filename date</td>
+                    </tr>
+                    <tr>
+                        <td>year</td>
+                        <td>2026</td>
+                        <td>URL folder</td>
+                    </tr>
+                    <tr>
+                        <td>month</td>
+                        <td>10</td>
+                        <td>URL folder</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>
+            If the CSV for the requested date already exists,
+            the function returns without downloading and
+            converting the Excel file again.
+        </p>
+    </div>
+
+
+    <h3 style="margin-top:45px;">Step 6 — Discover and Download the Excel File</h3>
+
+    <p class="section-intro">
+        This is an important part of the ingestion logic.
+        The notebook iterates through possible numeric
+        identifiers from 100 to 999 and constructs a
+        candidate URL for each identifier.
+    </p>
+
+    <div class="code-heading">
+        <span>Notebook 1 — Source File Discovery</span>
+        <span>PYTHON</span>
+    </div>
+
+<pre><code>for num in range(100, 1000):
+
+    url = (
+        f"https://webcdn.grid-india.in/files/grdw/"
+        f"{year}/{month}/{date_part}_NLDC_PSP_{num}.xls"
+    )
+
+    try:
+        r = session.get(
+            url,
+            timeout=30,
+            verify=False
+        )
+
+        if r.status_code == 200 and len(r.content) > 1000:
+
+            with open(xls_path, "wb") as f:
+                f.write(r.content)
+
+            # Excel conversion follows here
+
+    except RequestException as e:
+        print(f"Network issue: {e}")
+        time.sleep(0.5)
+        continue
+
+    time.sleep(0.3)</code></pre>
+
+    <div class="code-explanation">
+        <h4>What happens during discovery?</h4>
+        <ol>
+            <li>The notebook generates a candidate URL using year, month, date and numeric identifier.</li>
+            <li>It sends an HTTP GET request to the candidate URL.</li>
+            <li>It checks whether the response status is HTTP 200.</li>
+            <li>It also checks that the returned content is larger than 1,000 bytes.</li>
+            <li>When a candidate passes those checks, its content is written to the temporary XLS file.</li>
+            <li>Network exceptions are caught, logged and retried with the next candidate.</li>
+        </ol>
+    </div>
+
+    <div class="note">
+        <strong>Why is this part important?</strong>
+        <p>
+            The notebook does not assume that the source
+            file has one fixed numeric identifier. It searches
+            a range of possible identifiers to locate a
+            candidate file for the requested date.
+        </p>
+        <p>
+            The HTTP status and file-size checks are the
+            implemented acceptance conditions. They do not
+            independently prove that every returned file
+            contains the expected Excel data.
+        </p>
+    </div>
+
+
+    <h3 style="margin-top:45px;">Step 7 — Convert XLS into CSV Using Pandas</h3>
+
+    <p class="section-intro">
+        Once a candidate Excel file is downloaded, Pandas
+        reads the workbook and writes its contents to CSV.
+        The notebook explicitly specifies the
+        <code>xlrd</code> Excel-reading engine.
+    </p>
+
+    <div class="process-flow">
+
+        <div class="process-box">
+            <strong>HTTP Response</strong>
+            <span>Downloaded binary content</span>
+        </div>
+
+        <div class="process-arrow">→</div>
+
+        <div class="process-box">
+            <strong>Temporary XLS</strong>
+            <span>Saved in Lakehouse Files/xls</span>
+        </div>
+
+        <div class="process-arrow">→</div>
+
+        <div class="process-box">
+            <strong>Pandas</strong>
+            <span>Read Excel workbook</span>
+        </div>
+
+        <div class="process-arrow">→</div>
+
+        <div class="process-box">
+            <strong>CSV File</strong>
+            <span>Saved in Lakehouse Files/csv</span>
+        </div>
+
+    </div>
+
+    <div class="code-heading">
+        <span>Notebook 1 — Excel-to-CSV Conversion</span>
+        <span>PYTHON</span>
+    </div>
+
+<pre><code>with open(xls_path, "wb") as f:
+    f.write(r.content)
+
+df = pd.read_excel(
+    xls_path,
+    engine="xlrd"
+)
+
+df.to_csv(
+    csv_path,
+    index=False
+)
+
+os.remove(xls_path)
+
+print(f"Created CSV for {date_part} (PSP {num})")
+return True</code></pre>
+
+    <div class="code-explanation">
+        <h4>Detailed explanation</h4>
+
+        <p><strong>1. Write the downloaded content</strong></p>
+        <p>
+            The HTTP response contains the downloaded file
+            as binary content. The <code>wb</code> mode
+            writes those bytes into a temporary Excel file.
+        </p>
+
+        <p style="margin-top:13px;"><strong>2. Read the Excel workbook</strong></p>
+        <p>
+            <code>pd.read_excel()</code> loads the workbook
+            into a Pandas DataFrame. The DataFrame represents
+            the tabular information contained in the workbook.
+        </p>
+
+        <p style="margin-top:13px;"><strong>3. Export the DataFrame</strong></p>
+        <p>
+            <code>to_csv()</code> converts the DataFrame into
+            a CSV file. Setting <code>index=False</code>
+            prevents Pandas from adding its DataFrame index
+            as an extra CSV column.
+        </p>
+
+        <p style="margin-top:13px;"><strong>4. Delete the temporary XLS</strong></p>
+        <p>
+            After conversion, the notebook removes the
+            temporary Excel file from the XLS directory.
+            The converted CSV remains available for
+            downstream Spark processing.
+        </p>
+    </div>
+
+    <div class="success-note note">
+        <strong>Result of this stage</strong>
+        <p>
+            The source Excel workbook is converted into a
+            dated CSV file. The CSV becomes the input for
+            the next notebook, which performs Spark-based
+            staging and transformations.
+        </p>
+    </div>
+
+
+    <h3 style="margin-top:45px;">Step 8 — Process Recent Dates and Backfill Gaps</h3>
+
+    <p class="section-intro">
+        The notebook checks the previous eleven dates.
+        For each date, it calls the same processing function.
+        Existing CSV files are skipped, while missing CSV
+        files trigger the source discovery and conversion
+        process.
+    </p>
+
+    <div class="code-heading">
+        <span>Notebook 1 — Date Processing Loop</span>
+        <span>PYTHON</span>
+    </div>
+
+<pre><code>for i in range(1, 12):
+
+    check_date = today - timedelta(days=i)
+
+    process_date(check_date)
+
+print("Run completed.")</code></pre>
+
+    <div class="code-explanation">
+        <h4>Important distinction</h4>
+        <p>
+            The loop checks eleven previous dates, while
+            the CSV retention logic keeps files up to
+            three days old. These are two separate
+            behaviors in the actual implementation.
+        </p>
+    </div>
+
+</div>
+</section>
+
+
+<!-- =====================================================
+     04 NOTEBOOK 2
+===================================================== -->
+
+<section class="content-section" id="notebook-2">
+<div class="container">
+
+    <p class="section-label">04 • NOTEBOOK 02 • PYSPARK STAGING</p>
+    <h2>CSV Ingestion, Cleansing & Transformation</h2>
+
+    <p class="section-intro">
+        After the CSV files are prepared, the second notebook
+        reads them using Apache Spark and creates staging
+        Delta tables for national and state-level power data.
+    </p>
+
+    <h3>Step 1 — Read the CSV Files</h3>
+
+    <div class="code-heading">
+        <span>Notebook 2 — Spark CSV Reader</span>
+        <span>PYSPARK</span>
+    </div>
+
+<pre><code>base_path = "Files/csv/"
+
+df = (
+    spark.read
+    .option("header", "false")
+    .option("inferSchema", "true")
+    .csv(base_path)
+)</code></pre>
+
+    <div class="code-explanation">
+        <h4>Explanation</h4>
+        <ul>
+            <li><code>header=false</code> tells Spark that the CSV files do not contain a header row.</li>
+            <li>Spark therefore assigns column names such as <code>_c0</code>, <code>_c1</code> and <code>_c2</code>.</li>
+            <li><code>inferSchema=true</code> allows Spark to infer data types from the input.</li>
+            <li>The CSV directory is read as the source for staging transformations.</li>
+        </ul>
+    </div>
+
+
+    <h3 style="margin-top:40px;">Step 2 — Extract the Date from the Filename</h3>
+
+    <div class="code-heading">
+        <span>Notebook 2 — Filename Metadata</span>
+        <span>PYSPARK</span>
+    </div>
+
+<pre><code>df = (
+    df
+    .withColumn("file_path", F.input_file_name())
+    .withColumn(
+        "filename",
+        F.regexp_extract("file_path", r"([^/]+)$", 1)
+    )
+    .withColumn("Date_str", F.substring("filename", 1, 8))
+    .withColumn("Date", F.to_date("Date_str", "dd.MM.yy"))
+)</code></pre>
+
+    <div class="code-explanation">
+        <h4>How the date extraction works</h4>
+        <p>
+            The input file path is used to obtain the
+            filename. The first eight characters are
+            extracted and converted into a date using
+            the <code>dd.MM.yy</code> format.
+        </p>
+        <p>
+            For example, a filename beginning with
+            <code>25.10.26</code> produces the date
+            25 October 2026.
+        </p>
+    </div>
+
+
+    <h3 style="margin-top:40px;">Step 3 — Add the Ingestion Timestamp</h3>
+
+    <div class="code-heading">
+        <span>Notebook 2 — Date Modified</span>
+        <span>PYSPARK</span>
+    </div>
+
+<pre><code>df = df.withColumn(
+    "Date_modified",
+    F.current_timestamp()
+)</code></pre>
+
+    <p class="section-intro">
+        This adds the timestamp of the processing run
+        to the staged records. It provides ingestion-time
+        metadata in addition to the business date extracted
+        from the filename.
+    </p>
+
+
+    <h3>Step 4 — Create Different Staging Datasets</h3>
+
+    <p class="section-intro">
+        The notebook selects different source columns
+        depending on the metric being processed.
+        It creates separate staging tables for
+        All India, Chhattisgarh and Madhya Pradesh.
+    </p>
+
+    <div class="grid-2">
+
+        <article class="card">
+            <h3>All India — Peak Demand</h3>
+
+            <p>
+                Uses the Energy Type, WR and Total India
+                columns from the source CSV.
+            </p>
+
+            <ul>
+                <li>Filters Maximum Demand Met During the Day</li>
+                <li>Converts MW values to GW</li>
+                <li>Creates All India peak demand staging data</li>
+            </ul>
+        </article>
+
+        <article class="card">
+            <h3>State — Peak Demand</h3>
+
+            <p>
+                Uses state and maximum demand columns.
+                Separate filters are applied for
+                Chhattisgarh and MP.
+            </p>
+
+            <ul>
+                <li>Filters the required state</li>
+                <li>Casts maximum demand to long</li>
+                <li>Converts MW to GW</li>
+            </ul>
+        </article>
+
+        <article class="card">
+            <h3>All India — Power Consumption</h3>
+
+            <p>
+                Filters the Energy Met metric and selects
+                regional and national energy values.
+            </p>
+
+            <ul>
+                <li>Filters Energy Met (MU)</li>
+                <li>Processes WR and Total India</li>
+                <li>Calculates derived GW columns as coded</li>
+            </ul>
+        </article>
+
+        <article class="card">
+            <h3>State — Power Consumption</h3>
+
+            <p>
+                Extracts state-level energy consumption
+                values for the required states.
+            </p>
+
+            <ul>
+                <li>Filters Chhattisgarh and MP separately</li>
+                <li>Casts MU to double</li>
+                <li>Creates separate state staging tables</li>
+            </ul>
+        </article>
+
+    </div>
+
+
+    <h3 style="margin-top:40px;">Step 5 — Example: All India Peak Demand</h3>
+
+    <div class="code-heading">
+        <span>Notebook 2 — Peak Demand Transformation</span>
+        <span>PYSPARK</span>
+    </div>
+
+<pre><code>df = df.select(
+    "Date",
+    "Date_modified",
+    F.col("_c0").alias("Energy_Type"),
+    F.col("_c3").alias("WR"),
+    F.col("_c7").alias("Total_India")
+)
+
+df = df.filter(
+    F.col("Energy_Type") ==
+    "Maximum Demand Met During the Day (MW) (From NLDC SCADA)"
+)
+
+df = (
+    df
+    .withColumn("WR", F.col("WR").cast("long"))
+    .withColumn("Total_India", F.col("Total_India").cast("long"))
+    .withColumn("Total_India_GW", F.col("Total_India") / 1000)
+    .withColumn("WR_GW", F.col("WR") / 1000)
+)</code></pre>
+
+    <div class="code-explanation">
+        <h4>Why divide by 1,000?</h4>
+        <p>
+            The source peak demand values are represented
+            in megawatts (MW). Dividing by 1,000 converts
+            the values into gigawatts (GW).
+        </p>
+
+        <p style="margin-top:10px;">
+            For example, 50,000 MW becomes 50 GW.
+            The same conversion is applied to the
+            regional and national values in this
+            transformation.
+        </p>
+    </div>
+
+
+    <h3 style="margin-top:40px;">Step 6 — Create State-Level Datasets</h3>
+
+    <div class="code-heading">
+        <span>Notebook 2 — State Filtering Example</span>
+        <span>PYSPARK</span>
+    </div>
+
+<pre><code>df = df.select(
+    "Date",
+    "Date_modified",
+    F.col("_c1").alias("State"),
+    F.col("_c2").alias("Max_Demand")
+)
+
+df = df.filter(
+    F.col("State") == "Chhattisgarh"
+)
+
+df = (
+    df
+    .withColumn("Max_Demand", F.col("Max_Demand").cast("long"))
+    .withColumn("Peak_Demand_GW", F.col("Max_Demand") / 1000)
+)</code></pre>
+
+    <p class="section-intro">
+        The same processing pattern is used separately
+        for Madhya Pradesh, with the state filter changed
+        to <code>MP</code>.
+    </p>
+
+
+    <h3>Step 7 — Remove Duplicates and Add Partition Columns</h3>
+
+    <div class="code-heading">
+        <span>Notebook 2 — Deduplication and Partitioning</span>
+        <span>PYSPARK</span>
+    </div>
+
+<pre><code>df = df.dropDuplicates([
+    "Date",
+    "Date_modified",
+    "State",
+    "Max_Demand",
+    "Peak_Demand_GW"
+])
+
+df = (
+    df
+    .withColumn("year", F.year("Date"))
+    .withColumn("month", F.month("Date"))
+)</code></pre>
+
+    <div class="code-explanation">
+        <h4>Explanation</h4>
+        <ul>
+            <li>Duplicate handling is applied using the selected columns.</li>
+            <li>The year is extracted from the business date.</li>
+            <li>The month is extracted from the business date.</li>
+            <li>These columns are used when writing partitioned Delta tables.</li>
+        </ul>
+    </div>
+
+
+    <h3>Step 8 — Write Staging Delta Tables</h3>
+
+    <div class="code-heading">
+        <span>Notebook 2 — Delta Table Write</span>
+        <span>PYSPARK</span>
+    </div>
+
+<pre><code>(
+    df.write
+    .format("delta")
+    .mode("overwrite")
+    .partitionBy("year", "month")
+    .saveAsTable("staging.peak_demand_CG")
+)</code></pre>
+
+    <p class="section-intro">
+        The same write pattern is applied to the other
+        staging datasets, including All India peak demand,
+        state peak demand and power consumption tables.
+    </p>
+
+    <div class="success-note note">
+        <strong>Notebook 2 output</strong>
+        <p>
+            Transformed datasets are stored as Delta
+            staging tables, ready for historical
+            consolidation in Notebook 3.
+        </p>
+    </div>
+
+</div>
+</section>
+
+
+<!-- =====================================================
+     05 NOTEBOOK 3
+===================================================== -->
+
+<section class="content-section" id="notebook-3">
+<div class="container">
+
+    <p class="section-label">05 • NOTEBOOK 03 • HISTORICAL CONSOLIDATION</p>
+    <h2>Delta Lake MERGE — Updating Historical Data</h2>
+
+    <p class="section-intro">
+        The third notebook consolidates staged data into
+        the historical target tables. Instead of simply
+        replacing the entire historical dataset, SQL
+        MERGE operations match records using defined
+        business keys.
+    </p>
+
+    <h3>Step 1 — Understand the MERGE Operation</h3>
+
+    <div class="process-flow">
+
+        <div class="process-box">
+            <strong>Staging Table</strong>
+            <span>Recently processed data</span>
+        </div>
+
+        <div class="process-arrow">→</div>
+
+        <div class="process-box">
+            <strong>Match Condition</strong>
+            <span>Compare business keys</span>
+        </div>
+
+        <div class="process-arrow">→</div>
+
+        <div class="process-box">
+            <strong>Historical Table</strong>
+            <span>Update or insert records</span>
+        </div>
+
+    </div>
+
+    <div class="grid-2">
+
+        <article class="card">
+            <h3>WHEN MATCHED</h3>
+            <p>
+                When a matching business key is found,
+                the existing historical record is updated
+                using the latest staged values.
+            </p>
+        </article>
+
+        <article class="card">
+            <h3>WHEN NOT MATCHED</h3>
+            <p>
+                When no matching record exists, a new
+                record is inserted into the historical
+                target table.
+            </p>
+        </article>
+
+    </div>
+
+
+    <h3 style="margin-top:40px;">Step 2 — Example: All India Peak Demand MERGE</h3>
+
+    <div class="code-heading">
+        <span>Notebook 3 — Delta SQL MERGE</span>
+        <span>SQL</span>
+    </div>
+
+<pre><code>MERGE INTO peak_demand_AI AS tgt
+USING staging.peak_demand_AI AS src
+
+ON tgt.Date = src.Date
+
+WHEN MATCHED THEN UPDATE SET
+    tgt.Date_modified = src.Date_modified,
+    tgt.Energy_Type = src.Energy_Type,
+    tgt.WR = src.WR,
+    tgt.Total_India = src.Total_India,
+    tgt.Total_India_GW = src.Total_India_GW,
+    tgt.WR_GW = src.WR_GW
+
+WHEN NOT MATCHED THEN INSERT (
+    Date,
+    Date_modified,
+    Energy_Type,
+    WR,
+    Total_India,
+    Total_India_GW,
+    WR_GW,
+    year,
+    month
+)
+VALUES (
+    src.Date,
+    src.Date_modified,
+    src.Energy_Type,
+    src.WR,
+    src.Total_India,
+    src.Total_India_GW,
+    src.WR_GW,
+    year,
+    month
+)</code></pre>
+
+    <div class="code-explanation">
+        <h4>How the matching works</h4>
+        <p>
+            For All India peak demand, the matching key
+            is <code>Date</code>. If that date already
+            exists in the target table, the selected
+            values are updated. Otherwise, a new row
+            is inserted.
+        </p>
+    </div>
+
+
+    <h3 style="margin-top:40px;">Step 3 — Different Business Keys</h3>
+
+    <p class="section-intro">
+        The notebook uses different matching conditions
+        according to the type of dataset.
+    </p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Dataset</th>
+                    <th>MERGE Matching Key</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>All India Peak Demand</td>
+                    <td>Date</td>
+                </tr>
+                <tr>
+                    <td>Chhattisgarh Peak Demand</td>
+                    <td>Date + State</td>
+                </tr>
+                <tr>
+                    <td>MP Peak Demand</td>
+                    <td>Date + State</td>
+                </tr>
+                <tr>
+                    <td>All India Power Consumption</td>
+                    <td>Date + Energy_Type</td>
+                </tr>
+                <tr>
+                    <td>Chhattisgarh Power Consumption</td>
+                    <td>Date + State</td>
+                </tr>
+                <tr>
+                    <td>MP Power Consumption</td>
+                    <td>Date + State</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <h3 style="margin-top:40px;">Step 4 — Forecast and Actual Demand</h3>
+
+    <p class="section-intro">
+        The notebook also contains a separate MERGE
+        operation for the demand forecasting dataset.
+        It matches records using Date and updates
+        forecast and actual demand values.
+    </p>
+
+    <div class="code-heading">
+        <span>Notebook 3 — Forecast MERGE</span>
+        <span>SQL</span>
+    </div>
+
+<pre><code>MERGE INTO demand_forecasting AS tgt
+USING staging_demand_forecasting AS src
+
+ON tgt.Date = src.Date
+
+WHEN MATCHED THEN UPDATE SET
+    tgt.Demand_Forecast_GW = src.Demand_Forecast_GW,
+    tgt.Actual_Demand_GW = src.Actual_Demand_GW
+
+WHEN NOT MATCHED THEN INSERT (
+    Date,
+    Demand_Forecast_GW,
+    Actual_Demand_GW,
+    year,
+    month
+)
+VALUES (
+    src.Date,
+    src.Demand_Forecast_GW,
+    src.Actual_Demand_GW,
+    year(src.Date),
+    month(src.Date)
+)</code></pre>
+
+
+    <h3 style="margin-top:40px;">Step 5 — Validate Record Counts</h3>
+
+    <div class="code-heading">
+        <span>Notebook 3 — Count Checks</span>
+        <span>PYSPARK</span>
+    </div>
+
+<pre><code>spark.sql(
+    "SELECT COUNT(*) FROM peak_demand_AI"
+).show()
+
+spark.sql(
+    "SELECT COUNT(*) FROM staging.peak_demand_AI"
+).show()</code></pre>
+
+    <p class="section-intro">
+        The notebook executes source and target count
+        queries after the merge operations. These
+        queries provide a basic way to inspect the
+        number of records in the staging and
+        historical tables.
+    </p>
+
+    <div class="note">
+        <strong>Important implementation detail</strong>
+        <p>
+            Record counts alone do not prove that every
+            record has been merged correctly. A stronger
+            validation process would also check duplicate
+            business keys, missing dates and mismatched
+            values between source and target tables.
+        </p>
+    </div>
+
+</div>
+</section>
+
+
+<!-- =====================================================
+     06 NOTEBOOK 4
+===================================================== -->
+
+<section class="content-section" id="notebook-4">
+<div class="container">
+
+    <p class="section-label">06 • NOTEBOOK 04 • TABLE PARTITIONING</p>
+    <h2>Creating Partitioned Historical Delta Tables</h2>
+
+    <p class="section-intro">
+        The fourth notebook creates new Delta tables with
+        explicit schemas and year/month partitioning.
+        Existing historical data is then inserted into
+        these new tables.
+    </p>
+
+    <h3>Step 1 — Create a New Partitioned Table</h3>
+
+    <div class="code-heading">
+        <span>Notebook 4 — Table Definition</span>
+        <span>SQL</span>
+    </div>
+
+<pre><code>CREATE TABLE IF NOT EXISTS peak_demand_AI_new (
+    Date DATE,
+    Date_modified TIMESTAMP,
+    Energy_Type STRING,
+    WR DOUBLE,
+    Total_India DOUBLE,
+    Total_India_GW DOUBLE,
+    WR_GW DOUBLE,
+    year INT,
+    month INT
+)
+USING DELTA
+PARTITIONED BY (year, month)</code></pre>
+
+    <div class="code-explanation">
+        <h4>What does partitioning mean?</h4>
+        <p>
+            Partitioning organizes table data according
+            to specified column values. Here, the
+            partition columns are year and month.
+        </p>
+        <p>
+            This creates a date-oriented organization
+            for the stored data. It can help queries
+            that filter by those partition columns
+            avoid scanning unrelated partitions.
+        </p>
+    </div>
+
+
+    <h3 style="margin-top:40px;">Step 2 — Insert Historical Data</h3>
+
+    <div class="code-heading">
+        <span>Notebook 4 — Historical Data Migration</span>
+        <span>SQL</span>
+    </div>
+
+<pre><code>INSERT INTO peak_demand_AI_new
+SELECT
+    Date,
+    Date_modified,
+    Energy_Type,
+    WR,
+    Total_India,
+    Total_India_GW,
+    WR_GW,
+    year(Date) AS year,
+    month(Date) AS month
+FROM peak_demand_AI</code></pre>
+
+    <div class="code-explanation">
+        <h4>What happens here?</h4>
+        <ol>
+            <li>The new table is created with an explicit schema.</li>
+            <li>The historical target table is used as the source.</li>
+            <li>Year and month are derived from the Date column.</li>
+            <li>Historical records are inserted into the new partitioned table.</li>
+            <li>Record counts are queried to inspect the source and destination.</li>
+        </ol>
+    </div>
+
+
+    <h3 style="margin-top:40px;">Step 3 — Apply the Pattern to Other Datasets</h3>
+
+    <p class="section-intro">
+        The same table creation and historical insertion
+        approach is applied to the remaining datasets:
+    </p>
+
+    <div class="grid-2">
+
+        <article class="card">
+            <h3>Peak Demand</h3>
+            <ul>
+                <li>peak_demand_AI_new</li>
+                <li>peak_demand_CG_new</li>
+                <li>peak_demand_MP_new</li>
+            </ul>
+        </article>
+
+        <article class="card">
+            <h3>Power Consumption</h3>
+            <ul>
+                <li>power_consumption_AI_new</li>
+                <li>power_consumption_CG_new</li>
+                <li>power_consumption_MP_new</li>
+            </ul>
+        </article>
+
+    </div>
+
+    <div class="note">
+        <strong>Code review before publishing</strong>
+        <p>
+            In the supplied Notebook 4 code, the
+            All India power consumption INSERT statement
+            contains <code>Total_India_GW DOUBLE</code>
+            inside its SELECT list. That is not a valid
+            SELECT expression as written. The intended
+            expression appears to be the existing
+            <code>Total_India_GW</code> column. Verify
+            the executed version before presenting this
+            SQL as production-ready code.
+        </p>
+        <p>
+            Also, the supplied code creates tables with
+            the <code>_new</code> suffix and inserts data
+            into them. It does not show a final rename,
+            swap or replacement of the original tables.
+        </p>
+    </div>
+
+</div>
+</section>
+
+
+<!-- =====================================================
+     07 DATAFLOW GEN2
+===================================================== -->
+
+<section class="content-section">
+<div class="container">
+
+    <p class="section-label">07 • DATA INTEGRATION</p>
+    <h2>Dataflow Gen2 — Historical & Daily Data Updates</h2>
+
+    <p class="section-intro">
+        Dataflow Gen2 is used for two distinct data
+        integration requirements in the solution.
+    </p>
+
+    <div class="grid-2">
+
+        <article class="card">
+            <h3>Historical Data Load</h3>
+
+            <p>
+                A historical data load is performed through
+                Dataflow Gen2 to bring historical datasets
+                into the Lakehouse.
+            </p>
+
+            <ul>
+                <li>Historical source data ingestion</li>
+                <li>Dataflow-based transformation and loading</li>
+                <li>Lakehouse as the data storage destination</li>
+            </ul>
+        </article>
+
+        <article class="card">
+            <h3>Daily Forecast vs Actual Updates</h3>
+
+            <p>
+                An online Excel workbook is updated by users
+                according to their requirements. Dataflow
+                Gen2 connects to this workbook and loads
+                the updated actual demand data used for
+                forecast-versus-actual analysis.
+            </p>
+
+            <ul>
+                <li>Online Excel workbook connection</li>
+                <li>User-maintained actual demand information</li>
+                <li>Daily actual data update workflow</li>
+                <li>Lakehouse storage for analysis</li>
+            </ul>
+        </article>
+
+    </div>
+
+    <div class="note">
+        <strong>Separate data responsibilities</strong>
+        <p>
+            The source Excel-to-CSV ingestion notebook
+            and the online forecast/actual Excel Dataflow
+            are separate workflows. They should not be
+            represented as one single ingestion process.
+        </p>
+    </div>
+
+</div>
+</section>
+
+
+<!-- =====================================================
+     08 POWER BI
+===================================================== -->
+
+<section class="content-section" id="dashboard">
+<div class="container">
+
+    <p class="section-label">08 • BUSINESS INTELLIGENCE</p>
+    <h2>Power BI Dashboard — Actual Project Screenshots</h2>
+
+    <p class="section-intro">
+        The processed Lakehouse datasets are made available
+        for analytical reporting. The following images
+        show the actual Power BI dashboard screens
+        supplied for this project.
+    </p>
+
+    <div class="gallery">
+
+        <figure>
+            <a href="assets/morning%20meeting%201.png"
+               target="_blank"
+               rel="noopener noreferrer">
+
+                <img
+                    src="assets/morning%20meeting%201.png"
+                    alt="Power BI morning meeting dashboard view one"
+                    loading="lazy">
+            </a>
+
+            <figcaption>
+                <h3>Daily Morning Meeting — Dashboard 01</h3>
+                <p>
+                    Actual Power BI dashboard screenshot
+                    from the implemented reporting solution.
+                </p>
+            </figcaption>
+        </figure>
+
+
+        <figure>
+            <a href="assets/morning%20meeting%202.png"
+               target="_blank"
+               rel="noopener noreferrer">
+
+                <img
+                    src="assets/morning%20meeting%202.png"
+                    alt="Power BI morning meeting dashboard view two"
+                    loading="lazy">
+            </a>
+
+            <figcaption>
+                <h3>Daily Morning Meeting — Dashboard 02</h3>
+                <p>
+                    Additional reporting screen from
+                    the project.
+                </p>
+            </figcaption>
+        </figure>
+
+
+        <figure>
+            <a href="assets/morning%20meeting%203.png"
+               target="_blank"
+               rel="noopener noreferrer">
+
+                <img
+                    src="assets/morning%20meeting%203.png"
+                    alt="Power BI morning meeting dashboard view three"
+                    loading="lazy">
+            </a>
+
+            <figcaption>
+                <h3>Daily Morning Meeting — Dashboard 03</h3>
+                <p>
+                    Additional reporting screen from
+                    the project.
+                </p>
+            </figcaption>
+        </figure>
+
+    </div>
+
+    <div class="code-explanation">
+        <h4>Dashboard interaction</h4>
+        <p>
+            Select any dashboard screenshot to open
+            the original image in a separate browser tab.
+            This allows visitors to inspect the actual
+            report at a larger size.
+        </p>
+    </div>
+
+</div>
+</section>
+
+
+<!-- =====================================================
+     09 POWER AUTOMATE
+===================================================== -->
+
+<section class="content-section">
+<div class="container">
+
+    <p class="section-label">09 • WORKFLOW AUTOMATION</p>
+    <h2>Power Automate Integration</h2>
+
+    <p class="section-intro">
+        Power Automate supports the reporting workflow
+        through user-triggered refresh and scheduled
+        email communication.
+    </p>
+
+    <div class="grid-2">
+
+        <article class="card">
+            <h3>On-Demand Refresh</h3>
+
+            <p>
+                A Power Automate button allows users
+                to initiate the configured refresh
+                workflow when a refresh is required.
+            </p>
+        </article>
+
+        <article class="card">
+            <h3>Monthly Automated Email</h3>
+
+            <p>
+                A scheduled monthly Power Automate
+                flow sends email notifications to
+                support regular reporting communication.
+            </p>
+        </article>
+
+    </div>
+
+</div>
+</section>
+
+
+<!-- =====================================================
+     10 FINAL DATA FLOW
+===================================================== -->
+
+<section class="content-section">
+<div class="container">
+
+    <p class="section-label">10 • COMPLETE SOLUTION</p>
+    <h2>How All Components Work Together</h2>
+
+    <p class="section-intro">
+        The solution combines file-based ingestion,
+        Spark transformations, historical Delta
+        management, Dataflow Gen2 integrations,
+        Power BI and workflow automation.
+    </p>
+
+    <div class="card">
+
+        <div class="process-flow">
+            <div class="process-box">
+                <strong>Source XLS</strong>
+                <span>Daily published files</span>
+            </div>
+            <div class="process-arrow">→</div>
+            <div class="process-box">
+                <strong>Python</strong>
+                <span>Download and conversion</span>
+            </div>
+        </div>
+
+        <div class="process-flow">
+            <div class="process-box">
+                <strong>CSV Files</strong>
+                <span>Lakehouse Files</span>
+            </div>
+            <div class="process-arrow">→</div>
+            <div class="process-box">
+                <strong>PySpark</strong>
+                <span>Staging transformations</span>
+            </div>
+        </div>
+
+        <div class="process-flow">
+            <div class="process-box">
+                <strong>Delta MERGE</strong>
+                <span>Historical consolidation</span>
+            </div>
+            <div class="process-arrow">→</div>
+            <div class="process-box">
+                <strong>Lakehouse</strong>
+                <span>Structured datasets</span>
+            </div>
+        </div>
+
+        <div class="process-flow">
+            <div class="process-box">
+                <strong>Dataflow Gen2</strong>
+                <span>Historical and actual updates</span>
+            </div>
+            <div class="process-arrow">→</div>
+            <div class="process-box">
+                <strong>Power BI</strong>
+                <span>Reporting and analysis</span>
+            </div>
+        </div>
+
+        <div class="process-flow">
+            <div class="process-box">
+                <strong>Power Automate</strong>
+                <span>Refresh and email workflows</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</section>
+
+
+<!-- =====================================================
+     11 TECHNOLOGY STACK
+===================================================== -->
+
+<section class="content-section">
+<div class="container">
+
+    <p class="section-label">11 • TECHNOLOGIES</p>
+    <h2>Technology Stack</h2>
+
+    <div class="tags">
+        <span>Microsoft Fabric</span>
+        <span>Fabric Lakehouse</span>
+        <span>Python</span>
+        <span>Requests</span>
+        <span>Pandas</span>
+        <span>PySpark</span>
+        <span>SQL</span>
+        <span>Delta Lake</span>
+        <span>Dataflow Gen2</span>
+        <span>Power BI</span>
+        <span>DAX</span>
+        <span>Power Automate</span>
+        <span>Excel</span>
+    </div>
+
+</div>
+</section>
+
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer class="footer">
+    <p>Automated Power Grid Data Engineering Project</p>
+
+    <a href="index.html#projects">
+        ← Return to Portfolio
+    </a>
+</footer>
+
+</body>
+</html>

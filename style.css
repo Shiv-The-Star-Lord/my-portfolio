@@ -989,3 +989,42 @@ ul {
         text-align: center;
     }
 }
+
+
+/* PROJECT 02 - TEAL / EMERALD THEME */
+
+.project-card-02 {
+    background: linear-gradient(145deg, #102b2b, #163d3a);
+    border: 1px solid rgba(45, 212, 191, 0.25);
+    color: #ecfdf5;
+}
+
+.project-card-02 .project-category {
+    color: #5eead4;
+}
+
+.project-card-02 .project-number {
+    color: #5eead4;
+}
+
+.project-card-02 h3 {
+    color: #f0fdfa;
+}
+
+.project-card-02 p {
+    color: #b7d5ce;
+}
+
+.project-card-02 .project-tags span {
+    background: rgba(45, 212, 191, 0.12);
+    color: #99f6e4;
+    border: 1px solid rgba(45, 212, 191, 0.2);
+}
+
+.project-card-02 .project-link {
+    color: #5eead4;
+}
+
+.project-card-02 .project-link:hover {
+    color: #ffffff;
+}

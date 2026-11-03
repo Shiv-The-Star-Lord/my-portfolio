@@ -1,0 +1,857 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A Microsoft Power Automate solution for synchronizing collaborative Excel event data with SharePoint and automating Outlook calendar event creation.">
+    <title>Automated Meeting & Calendar Management | Project 02</title>
+    <link rel="stylesheet" href="project-02.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="container nav-container">
+            <a href="index.html" class="brand">PROJECT <span>02</span></a>
+            <a href="index.html" class="back-link">← Back to Portfolio</a>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="container hero-content">
+                <span class="eyebrow">MICROSOFT POWER AUTOMATE · WORKFLOW AUTOMATION</span>
+
+                <h1>Automated Meeting &amp; Calendar Management</h1>
+
+                <p class="hero-description">
+                    A two-stage automation architecture that synchronizes
+                    collaboratively maintained Excel event data with SharePoint
+                    and uses SharePoint records to drive Outlook calendar event
+                    creation.
+                </p>
+
+                <div class="tech-tags">
+                    <span>Power Automate</span>
+                    <span>SharePoint Online</span>
+                    <span>Excel Online</span>
+                    <span>Microsoft Outlook</span>
+                </div>
+
+                <div class="hero-meta">
+                    <div>
+                        <span class="meta-label">Architecture</span>
+                        <strong>Two-flow automation</strong>
+                    </div>
+                    <div>
+                        <span class="meta-label">Input</span>
+                        <strong>Collaborative Excel</strong>
+                    </div>
+                    <div>
+                        <span class="meta-label">Output</span>
+                        <strong>Outlook Calendar</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- OVERVIEW -->
+        <section class="section">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-number">01 / OVERVIEW</span>
+                    <h2>Project Overview</h2>
+                </div>
+
+                <div class="overview-grid">
+                    <div class="overview-text">
+                        <p>
+                            This project automates the movement of meeting and
+                            event information from a collaboratively maintained
+                            Excel workbook into Outlook Calendar.
+                        </p>
+
+                        <p>
+                            Five team members contribute event information to
+                            an online Excel workbook. Instead of generating
+                            calendar events directly from Excel, an
+                            intermediate SharePoint List is used to store and
+                            manage the event records.
+                        </p>
+
+                        <p>
+                            Microsoft Power Automate connects these systems
+                            through two independent cloud flows. The first
+                            synchronizes Excel records with SharePoint on a
+                            scheduled basis. The second responds to SharePoint
+                            item creation or modification and processes the
+                            corresponding Outlook calendar event.
+                        </p>
+                    </div>
+
+                    <div class="overview-card">
+                        <h3>Solution at a glance</h3>
+                        <div class="overview-item">
+                            <span>Data contributors</span>
+                            <strong>5 team members</strong>
+                        </div>
+                        <div class="overview-item">
+                            <span>Synchronization frequency</span>
+                            <strong>Every 2 hours</strong>
+                        </div>
+                        <div class="overview-item">
+                            <span>Intermediate data layer</span>
+                            <strong>SharePoint List</strong>
+                        </div>
+                        <div class="overview-item">
+                            <span>Calendar integration</span>
+                            <strong>Outlook Calendar</strong>
+                        </div>
+                        <div class="overview-item">
+                            <span>Automation components</span>
+                            <strong>2 cloud flows</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BUSINESS PROBLEM -->
+        <section class="section section-alt">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-number">02 / BUSINESS PROBLEM</span>
+                    <h2>Why Was This Automation Needed?</h2>
+                </div>
+
+                <div class="problem-grid">
+                    <article class="info-card">
+                        <div class="card-icon">01</div>
+                        <h3>Collaborative Data Entry</h3>
+                        <p>
+                            Multiple team members maintain event information
+                            in a shared Excel workbook. The workbook acts as
+                            the common input source for meeting data.
+                        </p>
+                    </article>
+
+                    <article class="info-card">
+                        <div class="card-icon">02</div>
+                        <h3>Direct Excel Integration Complexity</h3>
+                        <p>
+                            Generating Outlook calendar events directly from
+                            the collaborative Excel source introduced
+                            complications in the workflow.
+                        </p>
+                    </article>
+
+                    <article class="info-card">
+                        <div class="card-icon">03</div>
+                        <h3>Need for a Structured Data Layer</h3>
+                        <p>
+                            An intermediate SharePoint List provides a
+                            separate location for maintaining synchronized
+                            event records before calendar processing.
+                        </p>
+                    </article>
+                </div>
+
+                <div class="solution-banner">
+                    <span class="solution-label">ARCHITECTURAL DECISION</span>
+                    <h3>Introduce SharePoint between Excel and Outlook</h3>
+                    <p>
+                        Separate data synchronization from calendar event
+                        processing. This creates two independently managed
+                        automation stages instead of coupling calendar
+                        operations directly to the Excel workbook.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ARCHITECTURE -->
+        <section class="section">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-number">03 / SYSTEM ARCHITECTURE</span>
+                    <h2>End-to-End Architecture</h2>
+                    <p>
+                        The complete solution follows a sequential,
+                        two-stage data processing architecture.
+                    </p>
+                </div>
+
+                <div class="architecture">
+
+                    <div class="architecture-node source-node">
+                        <div class="node-icon">👥</div>
+                        <div>
+                            <span class="node-type">DATA CONTRIBUTORS</span>
+                            <h3>Five Team Members</h3>
+                            <p>Collaborative event data entry</p>
+                        </div>
+                    </div>
+
+                    <div class="connector">
+                        <span>Event information</span>
+                        <div class="connector-line"></div>
+                    </div>
+
+                    <div class="architecture-node excel-node">
+                        <div class="node-icon">📊</div>
+                        <div>
+                            <span class="node-type">DATA SOURCE</span>
+                            <h3>Online Excel Workbook</h3>
+                            <p>Structured event records in an Excel table</p>
+                        </div>
+                    </div>
+
+                    <div class="connector">
+                        <span>Flow 01 · Scheduled every 2 hours</span>
+                        <div class="connector-line"></div>
+                    </div>
+
+                    <div class="flow-block">
+                        <span class="flow-label">FLOW 01</span>
+                        <h3>Excel to SharePoint Synchronization</h3>
+                        <p>
+                            Read records, filter eligible events, match
+                            existing records using TaskID, and create or
+                            update SharePoint items.
+                        </p>
+                        <div class="flow-steps">
+                            <span>Read Excel</span>
+                            <span>Filter records</span>
+                            <span>Match TaskID</span>
+                            <span>Create / Update</span>
+                        </div>
+                    </div>
+
+                    <div class="connector">
+                        <span>Synchronized event records</span>
+                        <div class="connector-line"></div>
+                    </div>
+
+                    <div class="architecture-node sharepoint-node">
+                        <div class="node-icon">🗂️</div>
+                        <div>
+                            <span class="node-type">INTERMEDIATE DATA LAYER</span>
+                            <h3>SharePoint List</h3>
+                            <p>Structured event records and Outlook Event ID</p>
+                        </div>
+                    </div>
+
+                    <div class="connector">
+                        <span>Flow 02 · On item creation or modification</span>
+                        <div class="connector-line"></div>
+                    </div>
+
+                    <div class="flow-block flow-block-secondary">
+                        <span class="flow-label">FLOW 02</span>
+                        <h3>SharePoint to Outlook Automation</h3>
+                        <p>
+                            Validate the event record, inspect the existing
+                            Outlook Event ID, evaluate the event status, and
+                            execute the configured calendar operations.
+                        </p>
+                        <div class="flow-steps">
+                            <span>SharePoint trigger</span>
+                            <span>Validate data</span>
+                            <span>Check Event ID</span>
+                            <span>Status switch</span>
+                        </div>
+                    </div>
+
+                    <div class="connector">
+                        <span>Calendar event operations</span>
+                        <div class="connector-line"></div>
+                    </div>
+
+                    <div class="architecture-node outlook-node">
+                        <div class="node-icon">📅</div>
+                        <div>
+                            <span class="node-type">FINAL DESTINATION</span>
+                            <h3>Outlook Calendar</h3>
+                            <p>Meeting event creation and event reference</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <p class="architecture-note">
+                    Architecture representation based on the described
+                    implementation. Detailed branch behavior is documented
+                    separately below.
+                </p>
+            </div>
+        </section>
+
+        <!-- FLOW 01 -->
+        <section class="section section-alt">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-number">04 / FLOW 01</span>
+                    <h2>Excel to SharePoint Synchronization</h2>
+                    <p>
+                        A scheduled cloud flow that reads event information
+                        from Excel and synchronizes it with a SharePoint List.
+                    </p>
+                </div>
+
+                <div class="flow-overview">
+                    <div>
+                        <span class="mini-label">TRIGGER</span>
+                        <h3>Recurrence</h3>
+                        <p>
+                            The flow executes every two hours using the
+                            configured India/Kolkata time zone.
+                        </p>
+                    </div>
+                    <div class="frequency-card">
+                        <strong>02</strong>
+                        <span>Hours</span>
+                        <small>Scheduled interval</small>
+                    </div>
+                </div>
+
+                <div class="screenshot-container">
+                    <div class="screenshot-heading">
+                        <div>
+                            <span class="mini-label">IMPLEMENTATION SCREENSHOT</span>
+                            <h3>Excel Data Synchronization Flow</h3>
+                        </div>
+                        <span class="screenshot-tag">FLOW 01</span>
+                    </div>
+
+                    <img
+                        src="assets/project-02/excel-sync.png"
+                        alt="Power Automate Excel to SharePoint synchronization flow"
+                        class="project-screenshot"
+                        loading="lazy"
+                    />
+                    <p class="image-caption">
+                        Power Automate workflow for reading Excel records,
+                        filtering events and synchronizing SharePoint items.
+                    </p>
+                </div>
+
+                <div class="implementation-list">
+
+                    <article class="implementation-step">
+                        <span class="step-number">01</span>
+                        <div>
+                            <h3>Read Excel Table Records</h3>
+                            <p>
+                                The <strong>List rows present in a table</strong>
+                                action retrieves records from the configured
+                                Excel table.
+                            </p>
+                            <div class="code-label">SOURCE ACTION</div>
+                            <code>List rows present in a table</code>
+                        </div>
+                    </article>
+
+                    <article class="implementation-step">
+                        <span class="step-number">02</span>
+                        <div>
+                            <h3>Filter Eligible Events</h3>
+                            <p>
+                                The Filter array action checks that StartDate
+                                is not empty and retains records whose
+                                StartDate falls within the configured
+                                15-day lookback window.
+                            </p>
+                            <div class="code-label">FILTER EXPRESSION</div>
+                            <pre><code>and(
+    not(empty(item()?['StartDate'])),
+    greaterOrEquals(
+        item()?['StartDate'],
+        formatDateTime(
+            addDays(utcNow(), -15),
+            'yyyy-MM-dd'
+        )
+    )
+)</code></pre>
+                            <p class="technical-note">
+                                This filter applies a lower date boundary.
+                                It does not independently impose an upper
+                                date boundary.
+                            </p>
+                        </div>
+                    </article>
+
+                    <article class="implementation-step">
+                        <span class="step-number">03</span>
+                        <div>
+                            <h3>Process Each Filtered Record</h3>
+                            <p>
+                                Apply to each iterates through the filtered
+                                Excel records so that each event is checked
+                                individually.
+                            </p>
+                        </div>
+                    </article>
+
+                    <article class="implementation-step">
+                        <span class="step-number">04</span>
+                        <div>
+                            <h3>Find Existing SharePoint Records</h3>
+                            <p>
+                                Get items searches the SharePoint List using
+                                TaskID as the matching identifier, with a
+                                Top Count of 1.
+                            </p>
+                            <div class="code-label">MATCHING LOGIC</div>
+                            <pre><code>TaskID eq '[Current Excel Task ID]'</code></pre>
+                        </div>
+                    </article>
+
+                    <article class="implementation-step">
+                        <span class="step-number">05</span>
+                        <div>
+                            <h3>Check Whether the Record Exists</h3>
+                            <p>
+                                The condition checks the number of matching
+                                SharePoint records.
+                            </p>
+                            <pre><code>length(body('Get_items')?['value']) = 0</code></pre>
+                            <div class="branch-grid">
+                                <div class="branch-card">
+                                    <span class="branch-status new">TRUE</span>
+                                    <h4>Create Item</h4>
+                                    <p>
+                                        If no matching record exists,
+                                        a new SharePoint item is created.
+                                    </p>
+                                </div>
+                                <div class="branch-card">
+                                    <span class="branch-status existing">FALSE</span>
+                                    <h4>Update Item</h4>
+                                    <p>
+                                        If a matching record exists,
+                                        the existing SharePoint item is updated.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                </div>
+
+                <div class="result-banner">
+                    <h3>Flow 01 Outcome</h3>
+                    <p>
+                        Excel event information is synchronized into
+                        SharePoint using TaskID-based matching, with separate
+                        create and update operations.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FLOW 02 -->
+        <section class="section">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-number">05 / FLOW 02</span>
+                    <h2>SharePoint to Outlook Calendar Automation</h2>
+                    <p>
+                        An event-triggered cloud flow that uses SharePoint
+                        records to initiate Outlook calendar operations.
+                    </p>
+                </div>
+
+                <div class="trigger-card">
+                    <div class="trigger-icon">⚡</div>
+                    <div>
+                        <span class="mini-label">AUTOMATION TRIGGER</span>
+                        <h3>When an item is created or modified</h3>
+                        <p>
+                            The flow starts when a record is created or
+                            modified in the configured SharePoint List.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="screenshot-container">
+                    <div class="screenshot-heading">
+                        <div>
+                            <span class="mini-label">IMPLEMENTATION SCREENSHOT</span>
+                            <h3>SharePoint to Outlook Automation Flow</h3>
+                        </div>
+                        <span class="screenshot-tag">FLOW 02</span>
+                    </div>
+
+                    <img
+                        src="assets/project-02/sharepoint.png"
+                        alt="Power Automate SharePoint to Outlook calendar event flow"
+                        class="project-screenshot"
+                        loading="lazy"
+                    />
+                    <p class="image-caption">
+                        Power Automate workflow for processing SharePoint
+                        event records and performing Outlook calendar operations.
+                    </p>
+                </div>
+
+                <div class="implementation-list">
+
+                    <article class="implementation-step">
+                        <span class="step-number">01</span>
+                        <div>
+                            <h3>Initialize Outlook Event ID</h3>
+                            <p>
+                                The flow reads the OutlookEventID stored in
+                                SharePoint and initializes a string variable.
+                            </p>
+                            <pre><code>triggerBody()?['OutlookEventID']</code></pre>
+                            <p>
+                                A Compose action calculates the length of
+                                this value to determine whether an event
+                                identifier is present.
+                            </p>
+                        </div>
+                    </article>
+
+                    <article class="implementation-step">
+                        <span class="step-number">02</span>
+                        <div>
+                            <h3>Validate StartDate</h3>
+                            <p>
+                                A separate StartDate variable is initialized.
+                                Its length is evaluated to check whether
+                                event date information is available.
+                            </p>
+                            <pre><code>length(variables('StartDate'))</code></pre>
+                        </div>
+                    </article>
+
+                    <article class="implementation-step">
+                        <span class="step-number">03</span>
+                        <div>
+                            <h3>Evaluate Event Processing Conditions</h3>
+                            <p>
+                                The first condition checks whether the
+                                Outlook Event ID is empty. The subsequent
+                                StartDate condition validates the availability
+                                of the event date before proceeding.
+                            </p>
+                            <div class="condition-visual">
+                                <div class="condition-node">
+                                    <strong>Outlook Event ID length = 0?</strong>
+                                    <span>Initial condition</span>
+                                </div>
+                                <div class="condition-branches">
+                                    <div class="condition-path">
+                                        <span class="branch-status new">TRUE</span>
+                                        <p>Validate StartDate</p>
+                                    </div>
+                                    <div class="condition-path">
+                                        <span class="branch-status existing">FALSE</span>
+                                        <p>Existing Event ID path</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="implementation-step">
+                        <span class="step-number">04</span>
+                        <div>
+                            <h3>Process Event Status with Switch</h3>
+                            <p>
+                                The Switch action evaluates the SharePoint
+                                Status field and routes processing according
+                                to the configured status cases.
+                            </p>
+                            <pre><code>triggerBody()?['Status']</code></pre>
+
+                            <div class="status-grid">
+                                <div class="status-item">
+                                    <span class="status-dot postponed"></span>
+                                    <strong>Postponed</strong>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-dot completed"></span>
+                                    <strong>Completed</strong>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-dot scheduled"></span>
+                                    <strong>Scheduled</strong>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-dot cancelled"></span>
+                                    <strong>Cancelled</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="implementation-step">
+                        <span class="step-number">05</span>
+                        <div>
+                            <h3>Create Outlook Calendar Event</h3>
+                            <p>
+                                The configured Create event (V4) action
+                                creates an Outlook calendar event using
+                                the SharePoint event information.
+                            </p>
+
+                            <div class="detail-grid">
+                                <div>
+                                    <span>Calendar</span>
+                                    <strong>Configured Outlook calendar</strong>
+                                </div>
+                                <div>
+                                    <span>Start time</span>
+                                    <strong>Converted to India Standard Time</strong>
+                                </div>
+                                <div>
+                                    <span>End time</span>
+                                    <strong>Start time + 2 hours</strong>
+                                </div>
+                                <div>
+                                    <span>Category</span>
+                                    <strong>SharePoint event Status</strong>
+                                </div>
+                            </div>
+
+                            <div class="code-label">START TIME CONVERSION</div>
+                            <pre><code>convertTimeZone(
+    triggerOutputs()?['body/StartDate'],
+    'UTC',
+    'India Standard Time',
+    'yyyy-MM-ddTHH:mm:ss'
+)</code></pre>
+
+                            <div class="code-label">END TIME CALCULATION</div>
+                            <pre><code>formatDateTime(
+    addHours(
+        convertTimeZone(
+            triggerOutputs()?['body/StartDate'],
+            'UTC',
+            'India Standard Time'
+        ),
+        2
+    ),
+    'yyyy-MM-ddTHH:mm:ss'
+)</code></pre>
+                        </div>
+                    </article>
+
+                    <article class="implementation-step">
+                        <span class="step-number">06</span>
+                        <div>
+                            <h3>Store Calendar Event Reference</h3>
+                            <p>
+                                After event creation, the flow updates the
+                                corresponding SharePoint item with the
+                                generated Outlook Event ID and calculated
+                                End Date.
+                            </p>
+                            <pre><code>outputs('Create_event_(V4)_1_1')?['body/id']</code></pre>
+                            <p>
+                                This creates a reference between the
+                                SharePoint event record and its Outlook
+                                calendar event.
+                            </p>
+                        </div>
+                    </article>
+
+                </div>
+
+                <div class="result-banner">
+                    <h3>Flow 02 Outcome</h3>
+                    <p>
+                        SharePoint event records drive Outlook calendar
+                        event creation, while the generated event reference
+                        and calculated End Date are written back to
+                        SharePoint.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ARCHITECTURAL VALUE -->
+        <section class="section section-alt">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-number">06 / ARCHITECTURAL VALUE</span>
+                    <h2>Why Use SharePoint as the Intermediate Layer?</h2>
+                    <p>
+                        The main design decision is separating collaborative
+                        data entry from downstream calendar operations.
+                    </p>
+                </div>
+
+                <div class="benefit-grid">
+                    <article class="benefit-card">
+                        <span>01</span>
+                        <h3>Separation of Responsibilities</h3>
+                        <p>
+                            Excel handles collaborative input, while
+                            SharePoint stores synchronized records and
+                            the second flow handles calendar operations.
+                        </p>
+                    </article>
+
+                    <article class="benefit-card">
+                        <span>02</span>
+                        <h3>Structured Intermediate Storage</h3>
+                        <p>
+                            SharePoint provides a list-based structure
+                            for maintaining event records and associated
+                            processing information.
+                        </p>
+                    </article>
+
+                    <article class="benefit-card">
+                        <span>03</span>
+                        <h3>Record Matching</h3>
+                        <p>
+                            TaskID-based matching allows the first flow
+                            to distinguish between new and existing
+                            SharePoint records.
+                        </p>
+                    </article>
+
+                    <article class="benefit-card">
+                        <span>04</span>
+                        <h3>Event Traceability</h3>
+                        <p>
+                            Storing Outlook Event ID in SharePoint
+                            establishes a reference to the corresponding
+                            calendar event.
+                        </p>
+                    </article>
+
+                    <article class="benefit-card">
+                        <span>05</span>
+                        <h3>Independent Automation Stages</h3>
+                        <p>
+                            Synchronization and calendar processing
+                            are maintained in separate cloud flows,
+                            making their responsibilities easier to
+                            understand independently.
+                        </p>
+                    </article>
+
+                    <article class="benefit-card">
+                        <span>06</span>
+                        <h3>Centralized Event Records</h3>
+                        <p>
+                            The SharePoint List acts as the intermediate
+                            record repository used by the calendar
+                            automation.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHALLENGES -->
+        <section class="section">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-number">07 / TECHNICAL CONSIDERATIONS</span>
+                    <h2>Key Implementation Considerations</h2>
+                </div>
+
+                <div class="challenge-list">
+                    <div class="challenge-item">
+                        <h3>Record Identification</h3>
+                        <p>
+                            Matching Excel and SharePoint records using
+                            TaskID is important for avoiding duplicate
+                            SharePoint entries during repeated synchronization.
+                        </p>
+                    </div>
+
+                    <div class="challenge-item">
+                        <h3>Date and Time Zone Handling</h3>
+                        <p>
+                            Event timestamps are converted from UTC to
+                            India Standard Time before being passed to
+                            the Outlook calendar actions.
+                        </p>
+                    </div>
+
+                    <div class="challenge-item">
+                        <h3>Conditional Processing</h3>
+                        <p>
+                            The workflow evaluates Event ID availability,
+                            StartDate availability and event Status
+                            before proceeding through its configured
+                            processing branches.
+                        </p>
+                    </div>
+
+                    <div class="challenge-item">
+                        <h3>Maintaining Event References</h3>
+                        <p>
+                            Writing the generated Outlook Event ID back
+                            to SharePoint provides a persistent reference
+                            for subsequent processing.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TECHNOLOGIES -->
+        <section class="section section-alt">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-number">08 / TECHNOLOGY STACK</span>
+                    <h2>Technologies &amp; Tools</h2>
+                </div>
+
+                <div class="technology-grid">
+                    <div class="technology-card">
+                        <span class="technology-symbol">⚡</span>
+                        <h3>Microsoft Power Automate</h3>
+                        <p>Scheduled and event-triggered cloud flows</p>
+                    </div>
+
+                    <div class="technology-card">
+                        <span class="technology-symbol">📊</span>
+                        <h3>Microsoft Excel Online</h3>
+                        <p>Collaborative event data source</p>
+                    </div>
+
+                    <div class="technology-card">
+                        <span class="technology-symbol">🗂️</span>
+                        <h3>SharePoint Online</h3>
+                        <p>Intermediate event record management</p>
+                    </div>
+
+                    <div class="technology-card">
+                        <span class="technology-symbol">📅</span>
+                        <h3>Microsoft Outlook</h3>
+                        <p>Calendar event integration</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="project-footer">
+            <div class="container">
+                <span class="eyebrow">PROJECT 02</span>
+                <h2>Workflow Automation Through Connected Microsoft Services</h2>
+                <p>
+                    A two-stage automation approach connecting collaborative
+                    data entry, structured record management and calendar
+                    event processing.
+                </p>
+                <a href="index.html" class="footer-link">← Return to Portfolio</a>
+            </div>
+        </footer>
+
+    </main>
+
+</body>
+</html>

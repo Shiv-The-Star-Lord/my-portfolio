@@ -1028,3 +1028,41 @@ ul {
 .project-card-02 .project-link:hover {
     color: #ffffff;
 }
+
+/* PROJECT 03 - DEEP VIOLET / PURPLE THEME */
+
+.project-card-03 {
+    background: linear-gradient(145deg, #211638, #35245a);
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    color: #f5f3ff;
+}
+
+.project-card-03 .project-category {
+    color: #c4b5fd;
+}
+
+.project-card-03 .project-number {
+    color: #c4b5fd;
+}
+
+.project-card-03 h3 {
+    color: #f5f3ff;
+}
+
+.project-card-03 p {
+    color: #d1c7e8;
+}
+
+.project-card-03 .project-tags span {
+    background: rgba(167, 139, 250, 0.12);
+    color: #ddd6fe;
+    border: 1px solid rgba(167, 139, 250, 0.25);
+}
+
+.project-card-03 .project-link {
+    color: #c4b5fd;
+}
+
+.project-card-03 .project-link:hover {
+    color: #ffffff;
+}

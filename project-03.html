@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="An end-to-end Microsoft Fabric data engineering challenge implementation covering ingestion, transformation, orchestration, semantic modeling and Power BI reporting.">
+  <title>End-to-End Microsoft Fabric Data Engineering Solution | Project 03</title>
+  <link rel="stylesheet" href="project-03.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="back-link" href="index.html" aria-label="Back to portfolio homepage">
+        <span aria-hidden="true">←</span> Back to Portfolio
+      </a>
+      <span class="project-label"><span class="status-dot"></span> PROJECT 03 / DATA ENGINEERING</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">MICROSOFT FABRIC · END-TO-END IMPLEMENTATION</p>
+          <h1>From Raw Data<br><span>to Business Insights.</span></h1>
+          <p class="hero-description">
+            An end-to-end data engineering solution built with Microsoft Fabric for the
+            Wide World Importers (WWI) sample business scenario. The implementation
+            brings ingestion, transformation, orchestration and analytics together in
+            one Lakehouse-based workflow.
+          </p>
+          <div class="hero-tags" aria-label="Core technologies">
+            <span>Microsoft Fabric</span>
+            <span>PySpark</span>
+            <span>Delta Lake</span>
+            <span>Power BI</span>
+          </div>
+          <a class="primary-link" href="#solution">Explore the solution <span aria-hidden="true">↓</span></a>
+        </div>
+
+        <div class="hero-visual" aria-label="High-level data engineering flow">
+          <div class="visual-glow"></div>
+          <div class="flow-card source-card">
+            <span class="flow-index">01 / SOURCE</span>
+            <div class="flow-icon">▤</div>
+            <strong>Source files</strong>
+            <small>Azure Blob Storage</small>
+          </div>
+          <div class="flow-connector connector-one"><span></span></div>
+          <div class="flow-card platform-card">
+            <span class="flow-index">02 / PLATFORM</span>
+            <div class="flow-icon">◈</div>
+            <strong>Fabric Lakehouse</strong>
+            <small>OneLake · Delta tables</small>
+          </div>
+          <div class="flow-connector connector-two"><span></span></div>
+          <div class="flow-card insight-card">
+            <span class="flow-index">03 / INSIGHTS</span>
+            <div class="flow-icon">▥</div>
+            <strong>Power BI report</strong>
+            <small>Direct Lake semantic model</small>
+          </div>
+          <div class="visual-caption">A connected data-to-insights workflow</div>
+        </div>
+      </section>
+
+      <section class="quick-facts" aria-label="Project summary">
+        <div class="fact">
+          <span class="fact-number">07</span>
+          <span class="fact-label">Challenge tasks completed</span>
+        </div>
+        <div class="fact">
+          <span class="fact-number">01</span>
+          <span class="fact-label">Central Lakehouse</span>
+        </div>
+        <div class="fact">
+          <span class="fact-number">03</span>
+          <span class="fact-label">Workflow stages</span>
+        </div>
+        <div class="fact">
+          <span class="fact-number">E2E</span>
+          <span class="fact-label">Data engineering workflow</span>
+        </div>
+      </section>
+
+      <section class="content-section intro-grid" id="solution">
+        <div>
+          <p class="eyebrow">01 / PROJECT OVERVIEW</p>
+          <h2>A unified path from ingestion to reporting.</h2>
+        </div>
+        <div class="section-copy">
+          <p>
+            This project implements a Microsoft Fabric data engineering solution using
+            the Wide World Importers sample scenario. It starts with source data files,
+            lands them in a Lakehouse, transforms them into structured analytical
+            tables, prepares a curated Gold layer and makes the data available for
+            business reporting.
+          </p>
+          <p>
+            The workflow combines Fabric Data Factory, a PySpark notebook, Dataflow
+            Gen2, pipeline orchestration, a Direct Lake semantic model and a Power BI
+            profit report.
+          </p>
+        </div>
+      </section>
+
+      <section class="content-section problem-section">
+        <div class="section-heading">
+          <p class="eyebrow">02 / BUSINESS SCENARIO</p>
+          <h2>The challenge: fragmented data preparation.</h2>
+          <p class="section-intro">
+            In the WWI scenario, customer and sales data arrives from multiple business
+            channels. The analytics team’s manual preparation process can delay
+            reporting and create inconsistencies between business units.
+          </p>
+        </div>
+        <div class="problem-grid">
+          <article class="problem-card">
+            <span class="card-symbol">↘</span>
+            <h3>Manual ingestion</h3>
+            <p>Source files need to be collected and loaded before they can be analyzed.</p>
+          </article>
+          <article class="problem-card">
+            <span class="card-symbol">⌁</span>
+            <h3>Repeated preparation</h3>
+            <p>Data validation and transformation are performed as separate preparation steps.</p>
+          </article>
+          <article class="problem-card">
+            <span class="card-symbol">◷</span>
+            <h3>Delayed reporting</h3>
+            <p>Business reporting depends on prepared and consistently modeled data.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-section architecture-section">
+        <div class="section-heading">
+          <p class="eyebrow">03 / SOLUTION ARCHITECTURE</p>
+          <h2>How the components work together.</h2>
+          <p class="section-intro">
+            The architecture separates raw data ingestion, structured transformation,
+            curated output and the reporting layer.
+          </p>
+        </div>
+
+        <div class="architecture">
+          <div class="architecture-row">
+            <div class="architecture-node source-node">
+              <span class="node-kicker">DATA SOURCE</span>
+              <strong>Azure Blob Storage</strong>
+              <small>WWI Parquet dataset</small>
+            </div>
+          </div>
+          <div class="architecture-arrow">↓ <span>Copy activity · Fabric Data Factory</span></div>
+          <div class="architecture-row">
+            <div class="architecture-node lake-node">
+              <span class="node-kicker">STORAGE</span>
+              <strong>Microsoft Fabric Lakehouse</strong>
+              <small>OneLake · Raw files · Delta tables</small>
+            </div>
+          </div>
+          <div class="architecture-split">
+            <div class="architecture-branch">
+              <div class="architecture-arrow">↓ <span>PySpark notebook</span></div>
+              <div class="architecture-node transform-node">
+                <span class="node-kicker">TRANSFORM</span>
+                <strong>Fact &amp; dimension tables</strong>
+                <small>Star schema and aggregate tables</small>
+              </div>
+            </div>
+            <div class="architecture-branch">
+              <div class="architecture-arrow">↓ <span>Dataflow Gen2</span></div>
+              <div class="architecture-node gold-node">
+                <span class="node-kicker">CURATED LAYER</span>
+                <strong>Gold_Sales_By_City</strong>
+                <small>City attributes and profit margin</small>
+              </div>
+            </div>
+          </div>
+          <div class="architecture-arrow">↓ <span>Semantic modeling · Direct Lake</span></div>
+          <div class="architecture-row">
+            <div class="architecture-node report-node">
+              <span class="node-kicker">ANALYTICS</span>
+              <strong>Power BI · Profit Reporting</strong>
+              <small>Profit by territory, month and employee</small>
+            </div>
+          </div>
+        </div>
+        <p class="architecture-note">
+          The diagram is a high-level representation of the implemented challenge
+          workflow; it is not a live system diagram.
+        </p>
+      </section>
+
+      <section class="content-section implementation-section">
+        <div class="section-heading">
+          <p class="eyebrow">04 / IMPLEMENTATION</p>
+          <h2>Seven challenge tasks. One connected solution.</h2>
+          <p class="section-intro">
+            The implementation was completed in seven stages, from provisioning the
+            Fabric workspace through delivering the final report.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <article class="timeline-item">
+            <span class="timeline-number">01</span>
+            <div class="timeline-content">
+              <div class="timeline-meta">FOUNDATION</div>
+              <h3>Created the workspace and Lakehouse</h3>
+              <p>Provisioned the Microsoft Fabric workspace and created the <code>wwilakehouse</code> Lakehouse to hold the solution data and artifacts.</p>
+              <div class="mini-tags"><span>Fabric workspace</span><span>Lakehouse</span><span>OneLake</span></div>
+            </div>
+          </article>
+
+          <article class="timeline-item">
+            <span class="timeline-number">02</span>
+            <div class="timeline-content">
+              <div class="timeline-meta">INITIAL DATA LOAD</div>
+              <h3>Loaded customer data and created an initial report</h3>
+              <p>Loaded <code>dimension_customer</code> as a managed Delta table, queried customer counts by BuyingGroup through the SQL analytics endpoint, and created a semantic model and initial report.</p>
+              <div class="mini-tags"><span>CSV</span><span>Delta table</span><span>SQL analytics endpoint</span></div>
+            </div>
+          </article>
+
+          <article class="timeline-item">
+            <span class="timeline-number">03</span>
+            <div class="timeline-content">
+              <div class="timeline-meta">DATA INGESTION</div>
+              <h3>Built the Data Factory ingestion pipeline</h3>
+              <p>Created <code>IngestDataFromSourceToLakehouse</code> with a Copy data activity to ingest the WWI Parquet dataset from Azure Blob Storage into the Lakehouse Files area.</p>
+              <div class="mini-tags"><span>Data Factory</span><span>Azure Blob Storage</span><span>Parquet</span></div>
+            </div>
+          </article>
+
+          <article class="timeline-item">
+            <span class="timeline-number">04</span>
+            <div class="timeline-content">
+              <div class="timeline-meta">DATA TRANSFORMATION</div>
+              <h3>Transformed raw data into analytical Delta tables</h3>
+              <p>Used a PySpark notebook to prepare the sales fact table, dimension tables and aggregate tables, organizing the data into a star-schema structure.</p>
+              <div class="mini-tags"><span>PySpark</span><span>Delta Lake</span><span>Star schema</span></div>
+            </div>
+          </article>
+
+          <article class="timeline-item">
+            <span class="timeline-number">05</span>
+            <div class="timeline-content">
+              <div class="timeline-meta">GOLD LAYER</div>
+              <h3>Created a curated sales table with Dataflow Gen2</h3>
+              <p>Joined sales facts with city attributes, prepared the required fields and calculated <code>ProfitMargin</code> as Profit divided by TotalIncludingTax. The output was written to <code>Gold_Sales_By_City</code>.</p>
+              <div class="mini-tags"><span>Dataflow Gen2</span><span>Power Query</span><span>Profit margin</span></div>
+            </div>
+          </article>
+
+          <article class="timeline-item">
+            <span class="timeline-number">06</span>
+            <div class="timeline-content">
+              <div class="timeline-meta">ORCHESTRATION</div>
+              <h3>Automated the workflow and configured notifications</h3>
+              <p>Extended the pipeline to run the data copy, Dataflow Gen2 transformation and an Outlook success notification in sequence, then configured a daily schedule.</p>
+              <div class="mini-tags"><span>Pipeline orchestration</span><span>Outlook notification</span><span>Scheduling</span></div>
+            </div>
+          </article>
+
+          <article class="timeline-item">
+            <span class="timeline-number">07</span>
+            <div class="timeline-content">
+              <div class="timeline-meta">REPORTING</div>
+              <h3>Built the Direct Lake model and Power BI profit report</h3>
+              <p>Configured relationships between the sales fact and dimension tables, then created a profit report with profit by territory, fiscal month and employee.</p>
+              <div class="mini-tags"><span>Direct Lake</span><span>Semantic model</span><span>Power BI</span></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-section data-section">
+        <div class="section-heading">
+          <p class="eyebrow">05 / DATA MODEL</p>
+          <h2>Structured for analytical queries.</h2>
+          <p class="section-intro">
+            The PySpark transformation produced a sales fact table supported by
+            dimensions and aggregate tables.
+          </p>
+        </div>
+        <div class="data-model-grid">
+          <article class="model-card fact-model">
+            <span class="model-type">FACT TABLE</span>
+            <h3>fact_sale</h3>
+            <p>Central sales transaction table, partitioned by Year and Quarter.</p>
+          </article>
+          <article class="model-card">
+            <span class="model-type">DIMENSION TABLES</span>
+            <h3>Business context</h3>
+            <ul>
+              <li>dimension_city</li>
+              <li>dimension_customer</li>
+              <li>dimension_date</li>
+              <li>dimension_employee</li>
+              <li>dimension_stock_item</li>
+            </ul>
+          </article>
+          <article class="model-card">
+            <span class="model-type">AGGREGATE TABLES</span>
+            <h3>Pre-aggregated views</h3>
+            <ul>
+              <li>aggregate_sale_by_date_city</li>
+              <li>aggregate_sale_by_date_employee</li>
+            </ul>
+          </article>
+        </div>
+        <div class="gold-callout">
+          <div class="gold-icon">✦</div>
+          <div>
+            <span class="model-type">CURATED GOLD OUTPUT</span>
+            <h3>Gold_Sales_By_City</h3>
+            <p>Enriched sales output containing city, state, sales territory, profit, total including tax and the calculated profit margin.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section reporting-section">
+        <div class="section-heading">
+          <p class="eyebrow">06 / BUSINESS REPORTING</p>
+          <h2>Turning the modeled data into insights.</h2>
+          <p class="section-intro">
+            The Direct Lake semantic model connects the sales fact table with its
+            dimensions and supports the final Power BI profit report.
+          </p>
+        </div>
+        <div class="report-preview">
+          <div class="report-topbar">
+            <div class="report-brand"><span class="report-brand-mark">▥</span> PROFIT REPORTING</div>
+            <span class="report-mode">DIRECT LAKE SEMANTIC MODEL</span>
+          </div>
+          <div class="report-title">WW Importers Profit Reporting</div>
+          <div class="report-grid">
+            <div class="report-tile profit-tile">
+              <span class="report-tile-label">PROFIT</span>
+              <strong>Profit measure</strong>
+              <small>From fact_sale</small>
+            </div>
+            <div class="report-tile">
+              <span class="report-tile-label">PROFIT BY TERRITORY</span>
+              <div class="bar-visual" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+              <small>Clustered bar chart</small>
+            </div>
+            <div class="report-tile">
+              <span class="report-tile-label">PROFIT BY FISCAL MONTH</span>
+              <div class="area-visual" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <small>Stacked area chart · BuyingPackage</small>
+            </div>
+            <div class="report-tile">
+              <span class="report-tile-label">PROFIT BY EMPLOYEE</span>
+              <div class="column-visual" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <small>Stacked column chart</small>
+            </div>
+          </div>
+          <p class="preview-disclaimer">Illustrative layout only — not a screenshot or representation of actual report values.</p>
+        </div>
+      </section>
+
+      <section class="content-section skills-section">
+        <div class="section-heading">
+          <p class="eyebrow">07 / TECHNOLOGIES &amp; SKILLS</p>
+          <h2>Tools used across the solution.</h2>
+        </div>
+        <div class="technology-grid">
+          <div class="technology"><span>◈</span><strong>Microsoft Fabric</strong><small>Unified analytics platform</small></div>
+          <div class="technology"><span>⇄</span><strong>Data Factory</strong><small>Ingestion and orchestration</small></div>
+          <div class="technology"><span>⌘</span><strong>PySpark</strong><small>Data transformation</small></div>
+          <div class="technology"><span>◫</span><strong>Delta Lake</strong><small>Lakehouse tables</small></div>
+          <div class="technology"><span>⌁</span><strong>Dataflow Gen2</strong><small>Power Query transformation</small></div>
+          <div class="technology"><span>▥</span><strong>Power BI</strong><small>Semantic model and reporting</small></div>
+          <div class="technology"><span>☁</span><strong>Azure Blob Storage</strong><small>Source data storage</small></div>
+          <div class="technology"><span>✉</span><strong>Outlook</strong><small>Pipeline notifications</small></div>
+        </div>
+      </section>
+
+      <section class="content-section outcomes-section">
+        <div class="outcomes-panel">
+          <p class="eyebrow">08 / PROJECT OUTCOME</p>
+          <h2>A complete data engineering workflow, implemented end to end.</h2>
+          <p>
+            The completed challenge brought together source ingestion, Lakehouse
+            storage, structured transformations, a curated Gold table, scheduled
+            orchestration with notifications, and Direct Lake reporting in Microsoft
+            Fabric.
+          </p>
+          <div class="outcome-points">
+            <span><b>✓</b> Centralized Lakehouse storage</span>
+            <span><b>✓</b> Fact, dimension and aggregate tables</span>
+            <span><b>✓</b> Curated sales output with profit margin</span>
+            <span><b>✓</b> Scheduled pipeline and success notification</span>
+            <span><b>✓</b> Direct Lake semantic model and Power BI report</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section note-section">
+        <p class="eyebrow">PROJECT CONTEXT</p>
+        <p>
+          This portfolio project is based on a Microsoft Fabric hands-on challenge
+          using the Wide World Importers sample scenario and dataset. It demonstrates
+          an implemented learning project in a challenge environment; it is not
+          presented as a production deployment for Wide World Importers or as work
+          commissioned by that organization.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="back-link" href="index.html"><span aria-hidden="true">←</span> Back to Portfolio</a>
+      <span>PROJECT 03 · MICROSOFT FABRIC DATA ENGINEERING</span>
+    </footer>
+  </div>
+</body>
+</html>

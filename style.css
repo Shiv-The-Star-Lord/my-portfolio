@@ -1066,3 +1066,43 @@ ul {
 .project-card-03 .project-link:hover {
     color: #ffffff;
 }
+
+
+
+/* PROJECT 04 - WARM IVORY / TERRACOTTA THEME */
+
+.project-card-04 {
+    background: linear-gradient(145deg, #3b241d, #593629);
+    border: 1px solid rgba(224, 143, 98, 0.35);
+    color: #fff7ed;
+}
+
+.project-card-04 .project-category {
+    color: #f4b183;
+}
+
+.project-card-04 .project-number {
+    color: #f4b183;
+}
+
+.project-card-04 h3 {
+    color: #fff7ed;
+}
+
+.project-card-04 p {
+    color: #e8cfc0;
+}
+
+.project-card-04 .project-tags span {
+    background: rgba(224, 143, 98, 0.12);
+    color: #f5d5bd;
+    border: 1px solid rgba(224, 143, 98, 0.25);
+}
+
+.project-card-04 .project-link {
+    color: #f4b183;
+}
+
+.project-card-04 .project-link:hover {
+    color: #ffffff;
+}

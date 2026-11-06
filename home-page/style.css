@@ -333,6 +333,11 @@ ul {
     color: #4ade80;
 }
 
+.hero-highlight {
+    display: inline-block;
+    animation: blink 1s infinite;
+}
+
 .cursor {
     display: inline-block;
     height: 15px;
@@ -1134,4 +1139,110 @@ ul {
 
 .project-card-04 .project-link:hover {
     color: #ffffff;
+}
+
+
+/* ==============================
+   TECHNOLOGY CATEGORY SECTIONS
+============================== */
+
+.technology-section {
+    margin-top: 65px;
+}
+
+.technology-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.technology-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.technology-heading h3 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    color: var(--text-primary);
+}
+
+.technology-heading p {
+    margin: 0;
+    max-width: 650px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+
+/* ==============================
+   RESPONSIVE PROJECT GRID
+============================== */
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 25px;
+}
+
+
+/* ==============================
+   EMPTY PROJECT CATEGORY
+============================== */
+
+.empty-projects {
+    grid-column: 1 / -1;
+    padding: 35px 25px;
+    text-align: center;
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+}
+
+.empty-projects span {
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.empty-projects p {
+    margin: 12px 0 0;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+
+/* ==============================
+   MOBILE RESPONSIVENESS
+============================== */
+
+@media (max-width: 600px) {
+
+    .technology-section {
+        margin-top: 45px;
+    }
+
+    .technology-heading {
+        gap: 12px;
+    }
+
+    .technology-heading h3 {
+        font-size: 20px;
+    }
+
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+
 }

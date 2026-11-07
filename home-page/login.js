@@ -101,7 +101,9 @@ authForm.addEventListener("submit", async (event) => {
             if (error) throw error;
 
             authMessage.textContent =
-                "Login successful! Your account is authenticated.";
+                "Login successful! Redirecting to Project 02...";
+
+                window.location.href = "premium-project.html";
         }
     } catch (error) {
         authMessage.textContent = error.message;

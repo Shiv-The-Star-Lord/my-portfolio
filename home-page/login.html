@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Shivam Kumar</title>
+
+    <link rel="icon" href="assets/favicon.png" type="image/png">
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+    <main class="auth-container">
+        <section class="auth-card">
+
+            <a href="index.html" class="back-link">← Back to Portfolio</a>
+
+            <div class="auth-heading">
+                <h1 id="form-title">Welcome Back</h1>
+                <p id="form-description">Login to access your premium projects.</p>
+            </div>
+
+            <form id="auth-form">
+
+                <div class="form-group" id="name-group" hidden>
+                    <label for="full-name">Full Name</label>
+                    <input
+                        type="text"
+                        id="full-name"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        minlength="8"
+                        required
+                    >
+                </div>
+
+                <button type="submit" id="submit-button">
+                    Login
+                </button>
+
+                <p id="auth-message" role="status" aria-live="polite"></p>
+
+            </form>
+
+            <div class="auth-switch">
+                <span id="switch-text">Don't have an account?</span>
+                <button type="button" id="switch-button">
+                    Create Account
+                </button>
+            </div>
+
+        </section>
+    </main>
+
+    <script type="module" src="login.js"></script>
+</body>
+</html>

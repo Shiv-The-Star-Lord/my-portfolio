@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Premium Project 02 | Shivam Kumar</title>
+
+    <link rel="icon" href="assets/favicon.png" type="image/png">
+    <link rel="stylesheet" href="premium-project.css">
+</head>
+<body>
+
+    <header class="premium-header">
+        <a href="index.html">← Back to Portfolio</a>
+        <button id="logout-button" type="button">Logout</button>
+    </header>
+
+    <main class="premium-container">
+
+        <div id="loading-message">
+            Checking your account and purchase...
+        </div>
+
+        <div id="access-message" role="status" aria-live="polite"></div>
+
+        <section id="project-content" hidden>
+            <!-- Authorized Project 02 content will appear here. -->
+        </section>
+
+    </main>
+
+    <script type="module" src="premium-project.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</body>
+</html>

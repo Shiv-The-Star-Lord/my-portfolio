@@ -76,6 +76,7 @@ authForm.addEventListener("submit", async (event) => {
                 email,
                 password,
                 options: {
+                    emailRedirectTo: "https://shiv-the-star-lord.github.io/my-portfolio/home-page/login.html",
                     data: {
                         full_name: fullName
                     }

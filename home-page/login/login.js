@@ -104,7 +104,7 @@ authForm.addEventListener("submit", async (event) => {
             authMessage.textContent =
                 "Login successful! Redirecting to Project 02...";
 
-                window.location.href = "premium-project.html";
+                window.location.href = "../premium-projects-supabase/premium-project.html";
         }
     } catch (error) {
         authMessage.textContent = error.message;

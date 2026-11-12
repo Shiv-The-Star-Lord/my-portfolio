@@ -169,7 +169,7 @@ async function loadPremiumProject() {
         if (sessionError) throw sessionError;
 
         if (!session) {
-            window.location.href = "login.html";
+            window.location.href = "../login/login.html";
             return;
         }
 
